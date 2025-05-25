@@ -1,14 +1,17 @@
 using Company.API.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
+using NLog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+LogManager.Setup().LoadConfiguration(op=> Path.Combine(Directory.GetCurrentDirectory(), "/nlog.config"));
 
 builder.Services.AddControllers();
 
 builder.Services.AddConfigureCors();
 builder.Services.AddConfigureIISIntegration();
+builder.Services.AddConfigureLoggerService();
+
 
 builder.Services.AddOpenApi().AddSwaggerGen();
 
@@ -35,7 +38,6 @@ app.UseForwardedHeaders(new()
 });
 
 app.UseCors("CorsPolicy");
-
 
 app.UseAuthorization();
 
