@@ -1,6 +1,9 @@
 ﻿using Contracts;
 using LoggerService;
-using NLog;
+using Microsoft.EntityFrameworkCore;
+using Repository;
+using Service;
+using Service.Contracts;
 
 namespace Company.API.Extensions;
 
@@ -14,11 +17,34 @@ public static class ServiceExtensions
             .AllowAnyMethod()));
     }
 
-    public static void AddConfigureIISIntegration(this IServiceCollection services) =>
-        services.Configure<IISOptions>(op =>
+    public static void AddConfigureIISIntegration(this IServiceCollection services)
+        => services.Configure<IISOptions>(op =>
         {
         });
 
-    public static void AddConfigureLoggerService(this IServiceCollection services) =>
-        services.AddSingleton<ILoggerManager, LoggerManager>();
+    public static void AddConfigureLoggerService(this IServiceCollection services)
+        => services.AddSingleton<ILoggerManager, LoggerManager>();
+
+    public static void AddConfigureRepositoryManager(this IServiceCollection services)
+        => services.AddScoped<IRepositoryManager, RepositoryManager>();
+
+    public static void AddConfigureCompanyRepository(this IServiceCollection services)
+        => services.AddScoped<ICompanyRepository, CompanyRepository>();
+
+    public static void AddConfigureEmployeeRepository(this IServiceCollection services)
+        => services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+    public static void AddConfigureServiceManager(this IServiceCollection services)
+        => services.AddScoped<IServiceManger, ServiceManager>();
+
+    public static void AddConfigureCompanyServices(this IServiceCollection services)
+        => services.AddScoped<ICompanyService, CompanyService>();
+
+    public static void AddConfigureEmployeeServices(this IServiceCollection services)
+        => services.AddScoped<IEmployeeService, EmployeeService>();
+
+    public static void AddConfigureSqlContext(this IServiceCollection services,
+        IConfiguration configuration)
+        => services.AddDbContext<RepositoryContext>(opts =>
+              opts.UseSqlServer(configuration.GetConnectionString("sqlConnection")));
 }

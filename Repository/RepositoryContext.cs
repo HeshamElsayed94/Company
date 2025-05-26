@@ -1,0 +1,18 @@
+﻿using Entities.Models;
+using Microsoft.EntityFrameworkCore;
+using Repository.Configuration;
+
+namespace Repository;
+
+public class RepositoryContext(DbContextOptions options) : DbContext(options)
+{
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(CompanyConfiguration).Assembly);
+        base.OnModelCreating(modelBuilder);
+    }
+
+    public DbSet<Company> Companies { get; set; }
+
+    public DbSet<Employee> Employees { get; set; }
+}

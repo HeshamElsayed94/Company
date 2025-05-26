@@ -4,14 +4,20 @@ using NLog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-LogManager.Setup().LoadConfiguration(op=> Path.Combine(Directory.GetCurrentDirectory(), "/nlog.config"));
+LogManager.Setup().LoadConfiguration(op => Path.Combine(Directory.GetCurrentDirectory(), "/nlog.config"));
 
 builder.Services.AddControllers();
 
 builder.Services.AddConfigureCors();
 builder.Services.AddConfigureIISIntegration();
 builder.Services.AddConfigureLoggerService();
-
+builder.Services.AddConfigureRepositoryManager();
+builder.Services.AddConfigureCompanyRepository();
+builder.Services.AddConfigureEmployeeRepository();
+builder.Services.AddConfigureServiceManager();
+builder.Services.AddConfigureCompanyServices();
+builder.Services.AddConfigureEmployeeServices();
+builder.Services.AddConfigureSqlContext(builder.Configuration);
 
 builder.Services.AddOpenApi().AddSwaggerGen();
 
