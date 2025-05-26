@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Repository;
 
@@ -17,7 +16,7 @@ public class RepositoryContextFactory()
 
         var builder = new DbContextOptionsBuilder<RepositoryContext>()
             .UseSqlServer(configuration.GetConnectionString("sqlConnection"),
-            b => b.MigrationsAssembly(Assembly.GetExecutingAssembly()));
+            b => b.MigrationsAssembly(typeof(Program).Assembly));
 
         return new RepositoryContext(builder.Options);
     }

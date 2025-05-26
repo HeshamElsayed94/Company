@@ -3,7 +3,7 @@ using Service.Contracts;
 
 namespace Service;
 
-public sealed class CompanyService(IRepositoryManager repository, ILoggerManager loggerManager) : ICompanyService
+internal sealed class CompanyService(IRepositoryManager repository, ILoggerManager loggerManager) : ICompanyService
 {
 
 }

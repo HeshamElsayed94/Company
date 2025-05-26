@@ -2,8 +2,6 @@
 using LoggerService;
 using Microsoft.EntityFrameworkCore;
 using Repository;
-using Service;
-using Service.Contracts;
 
 namespace Company.API.Extensions;
 
@@ -33,15 +31,6 @@ public static class ServiceExtensions
 
     public static void AddConfigureEmployeeRepository(this IServiceCollection services)
         => services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-
-    public static void AddConfigureServiceManager(this IServiceCollection services)
-        => services.AddScoped<IServiceManger, ServiceManager>();
-
-    public static void AddConfigureCompanyServices(this IServiceCollection services)
-        => services.AddScoped<ICompanyService, CompanyService>();
-
-    public static void AddConfigureEmployeeServices(this IServiceCollection services)
-        => services.AddScoped<IEmployeeService, EmployeeService>();
 
     public static void AddConfigureSqlContext(this IServiceCollection services,
         IConfiguration configuration)
