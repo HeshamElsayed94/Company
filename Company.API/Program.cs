@@ -13,12 +13,23 @@ builder.Services.AddControllers()
 builder.Services.AddConfigureCors();
 builder.Services.AddConfigureIISIntegration();
 builder.Services.AddConfigureLoggerService();
+
+#region Repositories
+
 builder.Services.AddConfigureRepositoryManager();
 builder.Services.AddConfigureCompanyRepository();
 builder.Services.AddConfigureEmployeeRepository();
+
+#endregion Repositories
+
+#region Services
+
 builder.Services.AddConfigureServiceManager();
 builder.Services.AddConfigureCompanyServices();
 builder.Services.AddConfigureEmployeeServices();
+
+#endregion Services
+
 builder.Services.AddConfigureSqlContext(builder.Configuration);
 
 builder.Services.AddOpenApi().AddSwaggerGen();

@@ -8,9 +8,9 @@ public sealed class RepositoryManager(
     Lazy<IEmployeeRepository> employeeRepository)
     : IRepositoryManager
 {
-    public ICompanyRepository CompanyRepository => companyRepository.Value;
+    public ICompanyRepository Companies => companyRepository.Value;
 
-    public IEmployeeRepository EmployeeRepository => employeeRepository.Value;
+    public IEmployeeRepository Employees => employeeRepository.Value;
 
     public void Save() => context.SaveChanges();
 }

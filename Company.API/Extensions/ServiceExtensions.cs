@@ -27,10 +27,20 @@ public static class ServiceExtensions
         => services.AddScoped<IRepositoryManager, RepositoryManager>();
 
     public static void AddConfigureCompanyRepository(this IServiceCollection services)
-        => services.AddScoped<ICompanyRepository, CompanyRepository>();
+    {
+        services.AddScoped<ICompanyRepository, CompanyRepository>();
+
+        services.AddScoped(provider =>
+                new Lazy<ICompanyRepository>(() => provider.GetRequiredService<ICompanyRepository>()));
+    }
 
     public static void AddConfigureEmployeeRepository(this IServiceCollection services)
-        => services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+    {
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+        services.AddScoped(provider =>
+                new Lazy<IEmployeeRepository>(() => provider.GetRequiredService<IEmployeeRepository>()));
+    }
 
     public static void AddConfigureSqlContext(this IServiceCollection services,
         IConfiguration configuration)

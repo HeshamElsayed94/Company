@@ -9,8 +9,18 @@ public static class ServiceExtensions
        => services.AddScoped<IServiceManger, ServiceManager>();
 
     public static void AddConfigureCompanyServices(this IServiceCollection services)
-        => services.AddScoped<ICompanyService, CompanyService>();
+    {
+        services.AddScoped<ICompanyService, CompanyService>();
+
+        services.AddScoped(provider
+           => new Lazy<ICompanyService>(() => provider.GetRequiredService<ICompanyService>()));
+    }
 
     public static void AddConfigureEmployeeServices(this IServiceCollection services)
-        => services.AddScoped<IEmployeeService, EmployeeService>();
+    {
+        services.AddScoped<IEmployeeService, EmployeeService>();
+
+        services.AddScoped(provider
+            => new Lazy<IEmployeeService>(() => provider.GetRequiredService<IEmployeeService>()));
+    }
 }
