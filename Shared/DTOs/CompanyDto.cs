@@ -1,5 +1,4 @@
 ﻿namespace Shared.DTOs;
-[Serializable]
 public record CompanyDto
 {
     public Guid Id { get; init; }
