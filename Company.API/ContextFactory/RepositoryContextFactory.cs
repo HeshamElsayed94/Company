@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Repository;
 
-namespace Company.API.ContextFactory;
+namespace CompanyEmployees.API.ContextFactory;
 
 public class RepositoryContextFactory()
     : IDesignTimeDbContextFactory<RepositoryContext>

@@ -1,4 +1,6 @@
-using Company.API.Extensions;
+using System.Text.Json.Serialization;
+using CompanyEmployees.API.Extensions;
+using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
 using Service.Extensions;
@@ -8,7 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 LogManager.Setup().LoadConfiguration(op => Path.Combine(Directory.GetCurrentDirectory(), "/nlog.config"));
 
 builder.Services.AddControllers()
-    .AddApplicationPart(typeof(Company.Presentation.AssemblyReference).Assembly);
+    .AddJsonOptions(op => op.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
+    .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
 
 builder.Services.AddConfigureCors();
 builder.Services.AddConfigureIISIntegration();
@@ -36,10 +39,13 @@ builder.Services.AddOpenApi().AddSwaggerGen();
 
 var app = builder.Build();
 
+var logger = app.Services.GetRequiredService<ILoggerManager>();
+
+app.AddConfigureExceptionHandler(logger);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();

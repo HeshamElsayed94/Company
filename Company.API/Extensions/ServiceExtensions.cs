@@ -3,7 +3,7 @@ using LoggerService;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 
-namespace Company.API.Extensions;
+namespace CompanyEmployees.API.Extensions;
 
 public static class ServiceExtensions
 {

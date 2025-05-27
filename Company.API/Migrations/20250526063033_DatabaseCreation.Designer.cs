@@ -9,7 +9,7 @@ using Repository;
 
 #nullable disable
 
-namespace Company.API.Migrations
+namespace CompanyEmployees.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
     [Migration("20250526063033_DatabaseCreation")]
@@ -25,7 +25,7 @@ namespace Company.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Entities.Models.Company", b =>
+            modelBuilder.Entity("Entities.Models.CompanyEmployees", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,16 +82,16 @@ namespace Company.API.Migrations
 
             modelBuilder.Entity("Entities.Models.Employee", b =>
                 {
-                    b.HasOne("Entities.Models.Company", "Company")
+                    b.HasOne("Entities.Models.CompanyEmployees", "CompanyEmployees")
                         .WithMany("Employees")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Company");
+                    b.Navigation("CompanyEmployees");
                 });
 
-            modelBuilder.Entity("Entities.Models.Company", b =>
+            modelBuilder.Entity("Entities.Models.CompanyEmployees", b =>
                 {
                     b.Navigation("Employees");
                 });
