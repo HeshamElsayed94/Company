@@ -15,7 +15,7 @@ internal sealed class CompanyService(IRepositoryManager repository, ILoggerManag
 
         var companies = repository.Companies.GetAllCompanies(trackChanges);
 
-        var companiesDto = new MappingProfile().ToCompanyDto(companies);
+        var companiesDto = new MappingProfile().ToCompanyDto(companies).ToList();
 
         return companiesDto;
     }

@@ -30,7 +30,7 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
 
         var employees = repository.Employees.GetEmployees(companyId, trackChanges);
 
-        var employeesDto = new MappingProfile().ToEmployeeDto(employees);
+        var employeesDto = new MappingProfile().ToEmployeeDto(employees).ToList();
 
         return employeesDto;
     }
