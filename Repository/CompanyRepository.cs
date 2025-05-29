@@ -8,6 +8,8 @@ public class CompanyRepository(RepositoryContext context)
 {
     public bool CompanyExists(Guid companyId) => ExistsByCondition(c => c.Id.Equals(companyId));
 
+    public void CreateCompany(Company company) => Create(company);
+
     public IEnumerable<Company> GetAllCompanies(bool trackChanges)
         => [.. FindAll(trackChanges).OrderBy(c => c.Name)];
 

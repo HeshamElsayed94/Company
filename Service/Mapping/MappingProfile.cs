@@ -9,10 +9,16 @@ public partial class MappingProfile
 {
     private string FullAddress(Company company) => string.Join(' ', company.Address, company.Country);
 
+    #region Company
+
     [MapPropertyFromSource(nameof(CompanyDto.FullAddress), Use = nameof(FullAddress))]
     public partial CompanyDto ToCompanyDto(Company company);
 
     public partial IEnumerable<CompanyDto> ToCompanyDto(IEnumerable<Company> company);
+
+    public partial Company ToCompanyEntity(CompanyForCreationDto companyDto);
+
+    #endregion Company
 
     public partial EmployeeDto ToEmployeeDto(Employee employee);
 

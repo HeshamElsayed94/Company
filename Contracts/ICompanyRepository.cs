@@ -9,4 +9,6 @@ public interface ICompanyRepository
     Company? GetCompany(Guid companyId, bool trackChanges);
 
     bool CompanyExists(Guid companyId);
+
+    void CreateCompany(Company company);
 }

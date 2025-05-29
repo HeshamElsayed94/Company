@@ -10,4 +10,6 @@ public interface ICompanyService
 
     bool CompanyExists(Guid companyId);
 
+    CompanyDto CreateCompany(CompanyForCreationDto company);
+
 }

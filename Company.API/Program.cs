@@ -2,12 +2,16 @@ using System.Text.Json.Serialization;
 using CompanyEmployees.API.Extensions;
 using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using NLog;
 using Service.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 LogManager.Setup().LoadConfiguration(op => Path.Combine(Directory.GetCurrentDirectory(), "/nlog.config"));
+
+builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+
 
 builder.Services.AddControllers(config =>
     {

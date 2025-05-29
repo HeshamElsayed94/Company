@@ -18,9 +18,8 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
         var employee = repository.Employees.GetEmployee(companyId, id, trackChanges)
             ?? throw new EmployeeNotFoundException(id);
 
-        var employeeDto = new MappingProfile().ToEmployeeDto(employee);
+        return new MappingProfile().ToEmployeeDto(employee);
 
-        return employeeDto;
     }
 
     public IEnumerable<EmployeeDto> GetEmployees(Guid companyId, bool trackChanges)
@@ -30,8 +29,7 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
 
         var employees = repository.Employees.GetEmployees(companyId, trackChanges);
 
-        var employeesDto = new MappingProfile().ToEmployeeDto(employees).ToList();
+        return [.. new MappingProfile().ToEmployeeDto(employees)];
 
-        return employeesDto;
     }
 }

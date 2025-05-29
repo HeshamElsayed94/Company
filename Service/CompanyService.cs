@@ -8,16 +8,27 @@ namespace Service;
 
 internal sealed class CompanyService(IRepositoryManager repository, ILoggerManager loggerManager) : ICompanyService
 {
+    private readonly MappingProfile _mapper = new();
+
     public bool CompanyExists(Guid companyId) => repository.Companies.CompanyExists(companyId);
+
+    public CompanyDto CreateCompany(CompanyForCreationDto company)
+    {
+        var CompanyEntity = _mapper.ToCompanyEntity(company);
+
+        repository.Companies.CreateCompany(CompanyEntity);
+        repository.Save();
+
+        return _mapper.ToCompanyDto(CompanyEntity);
+    }
 
     public IEnumerable<CompanyDto> GetAllCompanies(bool trackChanges)
     {
 
         var companies = repository.Companies.GetAllCompanies(trackChanges);
 
-        var companiesDto = new MappingProfile().ToCompanyDto(companies).ToList();
+        return [.. _mapper.ToCompanyDto(companies)];
 
-        return companiesDto;
     }
 
     public CompanyDto GetCompany(Guid companyId, bool trackChanges)
@@ -25,8 +36,7 @@ internal sealed class CompanyService(IRepositoryManager repository, ILoggerManag
         var company = repository.Companies.GetCompany(companyId, trackChanges)
             ?? throw new CompanyNotFoundException(companyId);
 
-        var companyDto = new MappingProfile().ToCompanyDto(company);
+        return _mapper.ToCompanyDto(company);
 
-        return companyDto;
     }
 }
