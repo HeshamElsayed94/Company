@@ -30,8 +30,7 @@ internal sealed class CompanyService(IRepositoryManager repository, ILoggerManag
 
         var companyEntities = _mapper.ToCompanyEntity(companyCollection).ToList();
 
-        foreach (var company in companyEntities)
-            repository.Companies.CreateCompany(company);
+        repository.Companies.CreateCompanyCollection(companyEntities);
 
         repository.Save();
 

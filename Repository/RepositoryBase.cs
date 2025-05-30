@@ -9,6 +9,8 @@ public abstract class RepositoryBase<T>(RepositoryContext context) : IRepository
 
     public void Create(T entity) => context.Add(entity);
 
+    public void CreateCollection(IEnumerable<T> entities) => context.AddRange(entities);
+
     public void Delete(T entity) => context.Remove(entity);
 
     public bool ExistsByCondition(Expression<Func<T, bool>> expression) => context.Set<T>().Any(expression);

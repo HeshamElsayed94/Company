@@ -12,6 +12,8 @@ public interface IRepositoryBase<T>
 
     void Create(T entity);
 
+    void CreateCollection(IEnumerable<T> entities);
+
     void Update(T entity);
 
     void Delete(T entity);

@@ -10,6 +10,8 @@ public class CompanyRepository(RepositoryContext context)
 
     public void CreateCompany(Company company) => Create(company);
 
+    public void CreateCompanyCollection(IEnumerable<Company> companies) => CreateCollection(companies);
+
     public IEnumerable<Company> GetAllCompanies(bool trackChanges)
         => [.. FindAll(trackChanges).OrderBy(c => c.Name)];
 

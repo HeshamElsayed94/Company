@@ -13,4 +13,6 @@ public interface ICompanyRepository
     bool CompanyExists(Guid companyId);
 
     void CreateCompany(Company company);
+
+    void CreateCompanyCollection(IEnumerable<Company> companies);
 }
