@@ -10,4 +10,6 @@ public interface IEmployeeService
 
     EmployeeDto CreateEmployeeForCompany(Guid companyId, EmployeeForCreationDto employeeForCreation);
 
+    void DeleteEmployeeFromCompany(Guid companyId, Guid id, bool trackChanges);
+
 }

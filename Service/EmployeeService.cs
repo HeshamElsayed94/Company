@@ -12,7 +12,7 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
 
     public EmployeeDto CreateEmployeeForCompany(Guid companyId, EmployeeForCreationDto employeeForCreation)
     {
-        bool companyExist = repository.Companies.CompanyExists(companyId);
+        var companyExist = repository.Companies.CompanyExists(companyId);
 
         if (!companyExist)
             throw new CompanyNotFoundException(companyId);
@@ -25,9 +25,24 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
         return _mapper.ToEmployeeDto(employeeEntity);
     }
 
+    public void DeleteEmployeeFromCompany(Guid companyId, Guid id, bool trackChanges)
+    {
+        var companyExist = repository.Companies.CompanyExists(companyId);
+
+        if (!companyExist)
+            throw new CompanyNotFoundException(companyId);
+
+        var employeeForCompany = repository.Employees.GetEmployee(companyId, id, trackChanges)
+            ?? throw new EmployeeNotFoundException(id);
+
+        repository.Employees.DeleteEmployee(employeeForCompany);
+        repository.Save();
+
+    }
+
     public EmployeeDto GetEmployee(Guid companyId, Guid id, bool trackChanges)
     {
-        bool companyExist = repository.Companies.CompanyExists(companyId);
+        var companyExist = repository.Companies.CompanyExists(companyId);
 
         if (!companyExist)
             throw new CompanyNotFoundException(companyId);
