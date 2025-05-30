@@ -8,6 +8,23 @@ namespace Service;
 
 internal sealed class EmployeeService(IRepositoryManager repository, ILoggerManager loggerManager) : IEmployeeService
 {
+    private readonly MappingProfile _mapper = new();
+
+    public EmployeeDto CreateEmployeeForCompany(Guid companyId, EmployeeForCreationDto employeeForCreation)
+    {
+        bool companyExist = repository.Companies.CompanyExists(companyId);
+
+        if (!companyExist)
+            throw new CompanyNotFoundException(companyId);
+
+        var employeeEntity = _mapper.ToEmployeeEntity(employeeForCreation);
+
+        repository.Employees.CreateEmployeeForCompany(companyId, employeeEntity);
+        repository.Save();
+
+        return _mapper.ToEmployeeDto(employeeEntity);
+    }
+
     public EmployeeDto GetEmployee(Guid companyId, Guid id, bool trackChanges)
     {
         bool companyExist = repository.Companies.CompanyExists(companyId);
@@ -18,7 +35,7 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
         var employee = repository.Employees.GetEmployee(companyId, id, trackChanges)
             ?? throw new EmployeeNotFoundException(id);
 
-        return new MappingProfile().ToEmployeeDto(employee);
+        return _mapper.ToEmployeeDto(employee);
 
     }
 
@@ -29,7 +46,7 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
 
         var employees = repository.Employees.GetEmployees(companyId, trackChanges);
 
-        return [.. new MappingProfile().ToEmployeeDto(employees)];
+        return [.. _mapper.ToEmployeeDto(employees)];
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CompanyEmployees.Presentation.ModelBinders;
+using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DTOs;
 
@@ -9,6 +10,12 @@ namespace CompanyEmployees.Presentation.Controllers;
 public class CompaniesController(IServiceManger service)
     : ControllerBase
 {
+
+    [HttpGet("collection/({ids})")]
+    public IActionResult GetCompanyCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
+        => Ok(service.CompanyService.GetByIds(ids, false));
+
+
     [HttpGet]
     public IActionResult GetCompanies() => Ok(service.CompanyService.GetAllCompanies(false));
 
@@ -24,5 +31,14 @@ public class CompaniesController(IServiceManger service)
         var createdCompany = service.CompanyService.CreateCompany(company);
 
         return CreatedAtAction(nameof(GetCompany), new { id = createdCompany.Id }, createdCompany);
+    }
+
+    [HttpPost("collection")]
+    public IActionResult CreateCompanyCollection([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
+    {
+        var (companies, ids) = service.CompanyService
+            .CreateCompanyCollection(companyCollection);
+
+        return CreatedAtAction(nameof(GetCompanyCollection), new { ids }, companies);
     }
 }

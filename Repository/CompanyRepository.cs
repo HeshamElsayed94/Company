@@ -13,6 +13,9 @@ public class CompanyRepository(RepositoryContext context)
     public IEnumerable<Company> GetAllCompanies(bool trackChanges)
         => [.. FindAll(trackChanges).OrderBy(c => c.Name)];
 
+    public IEnumerable<Company> GetByIds(IEnumerable<Guid> ids, bool trackChanges)
+        => [.. FindByCondition(x => ids.Contains(x.Id), trackChanges)];
+
     public Company? GetCompany(Guid companyId, bool trackChanges) => FindByCondition(c => c.Id
     .Equals(companyId), trackChanges).FirstOrDefault();
 }

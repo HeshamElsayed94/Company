@@ -18,9 +18,17 @@ public partial class MappingProfile
 
     public partial Company ToCompanyEntity(CompanyForCreationDto companyDto);
 
+    public partial IEnumerable<Company> ToCompanyEntity(IEnumerable<CompanyForCreationDto> companyDtos);
+
     #endregion Company
+
+    #region Employee
 
     public partial EmployeeDto ToEmployeeDto(Employee employee);
 
     public partial IEnumerable<EmployeeDto> ToEmployeeDto(IEnumerable<Employee> company);
+
+    public partial Employee ToEmployeeEntity(EmployeeForCreationDto employeeDto);
+
+    #endregion Employee
 }

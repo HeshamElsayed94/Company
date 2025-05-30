@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
+using Shared.DTOs;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
@@ -14,4 +15,18 @@ public class EmployeesController(IServiceManger service) : ControllerBase
     [HttpGet("{id:guid}")]
     public IActionResult GetEmployee(Guid companyId, Guid id)
         => Ok(service.EmployeeService.GetEmployee(companyId, id, false));
+
+
+    [HttpPost]
+    public IActionResult CreateEmployeeForCompany(Guid companyId, [FromBody] EmployeeForCreationDto employee)
+    {
+        if (employee is null)
+            return BadRequest($"{nameof(employee)} object is null");
+
+        var employeeDto = service.EmployeeService
+            .CreateEmployeeForCompany(companyId, employee);
+
+        return CreatedAtAction(nameof(GetEmployee)
+            , new { companyId, id = employeeDto.Id }, employeeDto);
+    }
 }

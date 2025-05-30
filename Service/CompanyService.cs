@@ -22,6 +22,26 @@ internal sealed class CompanyService(IRepositoryManager repository, ILoggerManag
         return _mapper.ToCompanyDto(CompanyEntity);
     }
 
+    public (IEnumerable<CompanyDto> companies, string ids) CreateCompanyCollection
+        (IEnumerable<CompanyForCreationDto> companyCollection)
+    {
+        if (companyCollection is null)
+            throw new CompanyCollectionBadRequest();
+
+        var companyEntities = _mapper.ToCompanyEntity(companyCollection).ToList();
+
+        foreach (var company in companyEntities)
+            repository.Companies.CreateCompany(company);
+
+        repository.Save();
+
+        var companiesDto = _mapper.ToCompanyDto(companyEntities).ToList();
+
+        var ids = string.Join(',', companiesDto.Select(c => c.Id));
+
+        return (companiesDto, ids);
+    }
+
     public IEnumerable<CompanyDto> GetAllCompanies(bool trackChanges)
     {
 
@@ -29,6 +49,19 @@ internal sealed class CompanyService(IRepositoryManager repository, ILoggerManag
 
         return [.. _mapper.ToCompanyDto(companies)];
 
+    }
+
+    public IEnumerable<CompanyDto> GetByIds(IEnumerable<Guid> ids, bool trackChanges)
+    {
+        if (ids is null)
+            throw new CollectionByIdsBadRequestException();
+
+        var companiesEntities = repository.Companies.GetByIds(ids, trackChanges);
+
+        if (ids.Count() != companiesEntities.Count())
+            throw new CollectionByIdsBadRequestException();
+
+        return _mapper.ToCompanyDto(companiesEntities);
     }
 
     public CompanyDto GetCompany(Guid companyId, bool trackChanges)
