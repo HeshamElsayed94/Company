@@ -15,4 +15,6 @@ public interface ICompanyRepository
     void CreateCompany(Company company);
 
     void CreateCompanyCollection(IEnumerable<Company> companies);
+
+    void DeleteCompany(Company company);
 }

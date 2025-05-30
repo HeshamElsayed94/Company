@@ -41,4 +41,12 @@ public class CompaniesController(IServiceManger service)
 
         return CreatedAtAction(nameof(GetCompanyCollection), new { ids }, companies);
     }
+
+    [HttpDelete("{id:guid}")]
+    public IActionResult DeleteCompany(Guid id)
+    {
+        service.CompanyService.DeleteCompany(id, false);
+
+        return NoContent();
+    }
 }

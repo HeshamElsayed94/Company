@@ -12,6 +12,8 @@ public class CompanyRepository(RepositoryContext context)
 
     public void CreateCompanyCollection(IEnumerable<Company> companies) => CreateCollection(companies);
 
+    public void DeleteCompany(Company company) => Delete(company);
+
     public IEnumerable<Company> GetAllCompanies(bool trackChanges)
         => [.. FindAll(trackChanges).OrderBy(c => c.Name)];
 
