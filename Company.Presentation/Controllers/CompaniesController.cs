@@ -42,6 +42,17 @@ public class CompaniesController(IServiceManger service)
         return CreatedAtAction(nameof(GetCompanyCollection), new { ids }, companies);
     }
 
+    [HttpPut]
+    public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto companyForUpdate)
+    {
+        if (companyForUpdate is null)
+            return BadRequest($"{nameof(CompanyForUpdateDto)} object is null");
+
+        service.CompanyService.UpdateCompany(id, companyForUpdate, true);
+
+        return NoContent();
+    }
+
     [HttpDelete("{id:guid}")]
     public IActionResult DeleteCompany(Guid id)
     {

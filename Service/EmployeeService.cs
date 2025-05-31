@@ -64,4 +64,19 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
         return [.. _mapper.ToEmployeeDto(employees)];
 
     }
+
+    public void UpdateEmployeeForCompany(Guid companyId, Guid id, EmployeeForUpdateDto employeeForUpdate, bool empTrackChanges)
+    {
+        var companyExists = repository.Companies.CompanyExists(companyId);
+
+        if (!companyExists)
+            throw new CompanyNotFoundException(companyId);
+
+        var employeeEntity = repository.Employees.GetEmployee(companyId, id, empTrackChanges)
+            ?? throw new EmployeeNotFoundException(id);
+
+        _mapper.UpdateEmployee(employeeForUpdate, employeeEntity);
+
+        repository.Save();
+    }
 }

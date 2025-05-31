@@ -20,6 +20,8 @@ public partial class MappingProfile
 
     public partial IEnumerable<Company> ToCompanyEntity(IEnumerable<CompanyForCreationDto> companyDtos);
 
+    public partial void UpdateCompany(CompanyForUpdateDto companyForUpdate, Company company);
+
     #endregion Company
 
     #region Employee
@@ -29,6 +31,8 @@ public partial class MappingProfile
     public partial IEnumerable<EmployeeDto> ToEmployeeDto(IEnumerable<Employee> company);
 
     public partial Employee ToEmployeeEntity(EmployeeForCreationDto employeeDto);
+
+    public partial void UpdateEmployee(EmployeeForUpdateDto employeeForUpdate, Employee employee);
 
     #endregion Employee
 }

@@ -30,6 +30,19 @@ public class EmployeesController(IServiceManger service) : ControllerBase
             , new { companyId, id = employeeDto.Id }, employeeDto);
     }
 
+    [HttpPut("{id:guid}")]
+    public IActionResult UpdateEmployeeForCompany(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employeeForUpdate)
+    {
+        if (employeeForUpdate is null)
+            return BadRequest($"{nameof(EmployeeForUpdateDto)} object is null");
+
+        service.EmployeeService
+            .UpdateEmployeeForCompany(companyId, id, employeeForUpdate, true);
+
+        return NoContent();
+    }
+
+
     [HttpDelete("{id:guid}")]
     public IActionResult DeleteEmployee(Guid companyId, Guid id)
     {

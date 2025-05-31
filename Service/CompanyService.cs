@@ -81,4 +81,13 @@ internal sealed class CompanyService(IRepositoryManager repository, ILoggerManag
         return _mapper.ToCompanyDto(company);
 
     }
+
+    public void UpdateCompany(Guid companyId, CompanyForUpdateDto companyForUpdate, bool trackChanges)
+    {
+        var companyEntity = repository.Companies.GetCompany(companyId, trackChanges)
+            ?? throw new CompanyNotFoundException(companyId);
+
+        _mapper.UpdateCompany(companyForUpdate, companyEntity);
+        repository.Save();
+    }
 }

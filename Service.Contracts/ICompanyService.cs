@@ -18,4 +18,6 @@ public interface ICompanyService
 
     void DeleteCompany(Guid companyId, bool trackChanges);
 
+    void UpdateCompany(Guid companyId, CompanyForUpdateDto companyForUpdate, bool trackChanges);
+
 }
