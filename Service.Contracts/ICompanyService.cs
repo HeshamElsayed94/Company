@@ -1,4 +1,5 @@
-﻿using Shared.DTOs;
+﻿using Entities.Models;
+using Shared.DTOs;
 
 namespace Service.Contracts;
 
@@ -19,5 +20,9 @@ public interface ICompanyService
     void DeleteCompany(Guid companyId, bool trackChanges);
 
     void UpdateCompany(Guid companyId, CompanyForUpdateDto companyForUpdate, bool trackChanges);
+
+    (CompanyForUpdateDto CompanyToPatch, Company companyEntity) GetCompanyForPatch(Guid companyId, bool trackChanges);
+
+    void SaveChangesForPatch(CompanyForUpdateDto companyToPatch, Company companyEntity);
 
 }

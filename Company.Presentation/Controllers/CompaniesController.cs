@@ -1,4 +1,5 @@
 ﻿using CompanyEmployees.Presentation.ModelBinders;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DTOs;
@@ -42,13 +43,29 @@ public class CompaniesController(IServiceManger service)
         return CreatedAtAction(nameof(GetCompanyCollection), new { ids }, companies);
     }
 
-    [HttpPut]
+    [HttpPut("{id:guid}")]
     public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto companyForUpdate)
     {
         if (companyForUpdate is null)
             return BadRequest($"{nameof(CompanyForUpdateDto)} object is null");
 
         service.CompanyService.UpdateCompany(id, companyForUpdate, true);
+
+        return NoContent();
+    }
+
+    [HttpPatch("{id:guid}")]
+    public IActionResult PartiallyUpdateCompany(Guid id, [FromBody] JsonPatchDocument<CompanyForUpdateDto> pathDoc)
+    {
+        if (pathDoc is null)
+            return BadRequest($"{nameof(pathDoc)} object sent from client is null.");
+
+        var (companyToPatch, companyEntity) = service.CompanyService
+            .GetCompanyForPatch(id, true);
+
+        pathDoc.ApplyTo(companyToPatch);
+
+        service.CompanyService.SaveChangesForPatch(companyToPatch, companyEntity);
 
         return NoContent();
     }

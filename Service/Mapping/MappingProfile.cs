@@ -22,11 +22,15 @@ public partial class MappingProfile
 
     public partial void UpdateCompany(CompanyForUpdateDto companyForUpdate, Company company);
 
+    public partial CompanyForUpdateDto ToCompanyForUpdate(Company company);
+
     #endregion Company
 
     #region Employee
 
     public partial EmployeeDto ToEmployeeDto(Employee employee);
+
+    public partial EmployeeForUpdateDto ToEmployeeForUpdateDto(Employee employee);
 
     public partial IEnumerable<EmployeeDto> ToEmployeeDto(IEnumerable<Employee> company);
 

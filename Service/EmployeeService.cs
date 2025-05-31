@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities.Exceptions;
+using Entities.Models;
 using Service.Contracts;
 using Service.Mapping;
 using Shared.DTOs;
@@ -54,6 +55,22 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
 
     }
 
+    public (EmployeeForUpdateDto employeeToPatch, Employee employeeEntity) GetEmployeeForPatch
+        (Guid companyId, Guid id, bool empTrackChanges)
+    {
+        var companyExist = repository.Companies.CompanyExists(companyId);
+
+        if (!companyExist)
+            throw new CompanyNotFoundException(companyId);
+
+        var employeeEntity = repository.Employees.GetEmployee(companyId, id, empTrackChanges)
+            ?? throw new EmployeeNotFoundException(id);
+
+        var employeeToPatch = _mapper.ToEmployeeForUpdateDto(employeeEntity);
+
+        return (employeeToPatch, employeeEntity);
+    }
+
     public IEnumerable<EmployeeDto> GetEmployees(Guid companyId, bool trackChanges)
     {
         var company = repository.Companies.GetCompany(companyId, trackChanges)
@@ -63,6 +80,12 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
 
         return [.. _mapper.ToEmployeeDto(employees)];
 
+    }
+
+    public void SaveChangesForPatch(EmployeeForUpdateDto employeeToPatch, Employee employeeEntity)
+    {
+        _mapper.UpdateEmployee(employeeToPatch, employeeEntity);
+        repository.Save();
     }
 
     public void UpdateEmployeeForCompany(Guid companyId, Guid id, EmployeeForUpdateDto employeeForUpdate, bool empTrackChanges)

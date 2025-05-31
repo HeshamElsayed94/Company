@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities.Exceptions;
+using Entities.Models;
 using Service.Contracts;
 using Service.Mapping;
 using Shared.DTOs;
@@ -80,6 +81,22 @@ internal sealed class CompanyService(IRepositoryManager repository, ILoggerManag
 
         return _mapper.ToCompanyDto(company);
 
+    }
+
+    public (CompanyForUpdateDto CompanyToPatch, Company companyEntity) GetCompanyForPatch(Guid companyId, bool trackChanges)
+    {
+        var companyEntity = repository.Companies.GetCompany(companyId, trackChanges)
+            ?? throw new CompanyNotFoundException(companyId);
+
+        var companyToPatch = _mapper.ToCompanyForUpdate(companyEntity);
+
+        return (companyToPatch, companyEntity);
+    }
+
+    public void SaveChangesForPatch(CompanyForUpdateDto companyToPatch, Company companyEntity)
+    {
+        _mapper.UpdateCompany(companyToPatch, companyEntity);
+        repository.Save();
     }
 
     public void UpdateCompany(Guid companyId, CompanyForUpdateDto companyForUpdate, bool trackChanges)

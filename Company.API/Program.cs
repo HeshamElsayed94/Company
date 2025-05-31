@@ -3,6 +3,8 @@ using CompanyEmployees.API.Extensions;
 using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Options;
 using NLog;
 using Service.Extensions;
 
@@ -12,11 +14,38 @@ LogManager.Setup().LoadConfiguration(op => Path.Combine(Directory.GetCurrentDire
 
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
+#region NewtoSoft config to patch request only
+
+static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
+{
+    var builder = new ServiceCollection()
+        .AddLogging()
+        .AddControllers()
+        .AddNewtonsoftJson()
+        .Services.BuildServiceProvider();
+
+    var formatter = builder
+        .GetRequiredService<IOptions<MvcOptions>>()
+        .Value
+        .InputFormatters
+        .OfType<NewtonsoftJsonPatchInputFormatter>()
+        .First();
+
+    //if you want to support application/json
+
+    //formatter.SupportedMediaTypes.Add("application/json");
+
+    return formatter;
+}
+
+#endregion NewtoSoft config to patch request only
+
 
 builder.Services.AddControllers(config =>
     {
         config.RespectBrowserAcceptHeader = true;
         config.ReturnHttpNotAcceptable = true;
+        config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
     }).AddXmlDataContractSerializerFormatters()
     .AddCustomCSVFormatter()
     .AddJsonOptions(op => op.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
