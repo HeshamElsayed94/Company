@@ -24,6 +24,9 @@ public class EmployeesController(IServiceManger service) : ControllerBase
         if (employee is null)
             return BadRequest($"{nameof(employee)} object is null");
 
+        if (!ModelState.IsValid)
+            return UnprocessableEntity(ModelState);
+
         var employeeDto = service.EmployeeService
             .CreateEmployeeForCompany(companyId, employee);
 
@@ -36,6 +39,9 @@ public class EmployeesController(IServiceManger service) : ControllerBase
     {
         if (employeeForUpdate is null)
             return BadRequest($"{nameof(EmployeeForUpdateDto)} object is null");
+
+        if (!ModelState.IsValid)
+            return UnprocessableEntity(ModelState);
 
         service.EmployeeService
             .UpdateEmployeeForCompany(companyId, id, employeeForUpdate, true);
@@ -54,7 +60,12 @@ public class EmployeesController(IServiceManger service) : ControllerBase
         var (employeeToPatch, employeeEntity) = service.EmployeeService
             .GetEmployeeForPatch(companyId, id, true);
 
-        patchDoc.ApplyTo(employeeToPatch);
+        patchDoc.ApplyTo(employeeToPatch, ModelState);
+
+        TryValidateModel(employeeToPatch);
+
+        if (!ModelState.IsValid)
+            return UnprocessableEntity(ModelState);
 
         service.EmployeeService.SaveChangesForPatch(employeeToPatch, employeeEntity);
 

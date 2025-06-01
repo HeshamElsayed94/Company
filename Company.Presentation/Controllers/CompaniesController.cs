@@ -29,6 +29,9 @@ public class CompaniesController(IServiceManger service)
         if (company is null)
             return BadRequest($"{nameof(CompanyForCreationDto)} object is null");
 
+        if (!ModelState.IsValid)
+            return UnprocessableEntity(ModelState);
+
         var createdCompany = service.CompanyService.CreateCompany(company);
 
         return CreatedAtAction(nameof(GetCompany), new { id = createdCompany.Id }, createdCompany);
@@ -49,6 +52,9 @@ public class CompaniesController(IServiceManger service)
         if (companyForUpdate is null)
             return BadRequest($"{nameof(CompanyForUpdateDto)} object is null");
 
+        if (!ModelState.IsValid)
+            return UnprocessableEntity(ModelState);
+
         service.CompanyService.UpdateCompany(id, companyForUpdate, true);
 
         return NoContent();
@@ -63,7 +69,12 @@ public class CompaniesController(IServiceManger service)
         var (companyToPatch, companyEntity) = service.CompanyService
             .GetCompanyForPatch(id, true);
 
-        pathDoc.ApplyTo(companyToPatch);
+        pathDoc.ApplyTo(companyToPatch, ModelState);
+
+        TryValidateModel(companyToPatch);
+
+        if (!ModelState.IsValid)
+            return UnprocessableEntity(ModelState);
 
         service.CompanyService.SaveChangesForPatch(companyToPatch, companyEntity);
 
