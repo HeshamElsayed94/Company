@@ -16,27 +16,11 @@ builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelS
 
 #region NewtoSoft config to patch request only
 
-static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
-{
-    var builder = new ServiceCollection()
-        .AddLogging()
-        .AddControllers()
-        .AddNewtonsoftJson()
-        .Services.BuildServiceProvider();
-
-    var formatter = builder
-        .GetRequiredService<IOptions<MvcOptions>>()
-        .Value
-        .InputFormatters
-        .OfType<NewtonsoftJsonPatchInputFormatter>()
-        .First();
-
-    //if you want to support application/json
-
-    //formatter.SupportedMediaTypes.Add("application/json");
-
-    return formatter;
-}
+NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter() =>
+new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson()
+.Services.BuildServiceProvider()
+.GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters
+.OfType<NewtonsoftJsonPatchInputFormatter>().First();
 
 #endregion NewtoSoft config to patch request only
 
