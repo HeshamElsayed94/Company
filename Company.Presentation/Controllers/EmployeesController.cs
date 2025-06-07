@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using CompanyEmployees.Presentation.ActionFilters;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DTOs;
@@ -19,14 +20,9 @@ public class EmployeesController(IServiceManger service) : ControllerBase
 
 
     [HttpPost]
+    [ServiceFilter<ValidationFilterAttribute>]
     public async Task<IActionResult> CreateEmployeeForCompany(Guid companyId, [FromBody] EmployeeForCreationDto employee)
     {
-        if (employee is null)
-            return BadRequest($"{nameof(employee)} object is null");
-
-        if (!ModelState.IsValid)
-            return UnprocessableEntity(ModelState);
-
         var employeeDto = await service.EmployeeService
             .CreateEmployeeForCompanyAsync(companyId, employee);
 
@@ -35,14 +31,9 @@ public class EmployeesController(IServiceManger service) : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [ServiceFilter<ValidationFilterAttribute>]
     public async Task<IActionResult> UpdateEmployeeForCompany(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employeeForUpdate)
     {
-        if (employeeForUpdate is null)
-            return BadRequest($"{nameof(EmployeeForUpdateDto)} object is null");
-
-        if (!ModelState.IsValid)
-            return UnprocessableEntity(ModelState);
-
         await service.EmployeeService
               .UpdateEmployeeForCompanyAsync(companyId, id, employeeForUpdate, true);
 

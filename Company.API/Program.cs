@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using CompanyEmployees.API.Extensions;
+using CompanyEmployees.Presentation.ActionFilters;
 using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +53,8 @@ builder.Services.AddConfigureEmployeeRepository();
 builder.Services.AddConfigureServiceManager();
 builder.Services.AddConfigureCompanyServices();
 builder.Services.AddConfigureEmployeeServices();
+
+builder.Services.AddScoped<ValidationFilterAttribute>();
 
 #endregion Services
 

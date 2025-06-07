@@ -1,4 +1,5 @@
-﻿using CompanyEmployees.Presentation.ModelBinders;
+﻿using CompanyEmployees.Presentation.ActionFilters;
+using CompanyEmployees.Presentation.ModelBinders;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
@@ -26,20 +27,16 @@ public class CompaniesController(IServiceManger service)
         => Ok(await service.CompanyService.GetCompanyAsync(id, false));
 
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
     {
-        if (company is null)
-            return BadRequest($"{nameof(CompanyForCreationDto)} object is null");
-
-        if (!ModelState.IsValid)
-            return UnprocessableEntity(ModelState);
-
         var createdCompany = service.CompanyService.CreateCompanyAsync(company);
 
         return CreatedAtAction(nameof(GetCompany), new { id = createdCompany.Id }, createdCompany);
     }
 
     [HttpPost("collection")]
+    [ServiceFilter<ValidationFilterAttribute>]
     public async Task<IActionResult> CreateCompanyCollection([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
     {
         var (companies, ids) = await service.CompanyService
@@ -49,14 +46,9 @@ public class CompaniesController(IServiceManger service)
     }
 
     [HttpPut("{id:guid}")]
+    [ServiceFilter<ValidationFilterAttribute>]
     public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto companyForUpdate)
     {
-        if (companyForUpdate is null)
-            return BadRequest($"{nameof(CompanyForUpdateDto)} object is null");
-
-        if (!ModelState.IsValid)
-            return UnprocessableEntity(ModelState);
-
         service.CompanyService.UpdateCompanyAsync(id, companyForUpdate, true);
 
         return NoContent();
