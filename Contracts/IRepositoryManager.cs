@@ -6,5 +6,5 @@ public interface IRepositoryManager
 
     IEmployeeRepository Employees { get; }
 
-    void Save();
+    Task SaveAsync();
 }

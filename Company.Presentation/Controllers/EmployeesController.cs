@@ -10,16 +10,16 @@ namespace CompanyEmployees.Presentation.Controllers;
 public class EmployeesController(IServiceManger service) : ControllerBase
 {
     [HttpGet]
-    public IActionResult GetEmployees(Guid companyId)
-        => Ok(service.EmployeeService.GetEmployees(companyId, false));
+    public async Task<IActionResult> GetEmployees(Guid companyId)
+        => Ok(await service.EmployeeService.GetEmployeesAsync(companyId, false));
 
     [HttpGet("{id:guid}")]
-    public IActionResult GetEmployee(Guid companyId, Guid id)
-        => Ok(service.EmployeeService.GetEmployee(companyId, id, false));
+    public async Task<IActionResult> GetEmployee(Guid companyId, Guid id)
+        => Ok(await service.EmployeeService.GetEmployeeAsync(companyId, id, false));
 
 
     [HttpPost]
-    public IActionResult CreateEmployeeForCompany(Guid companyId, [FromBody] EmployeeForCreationDto employee)
+    public async Task<IActionResult> CreateEmployeeForCompany(Guid companyId, [FromBody] EmployeeForCreationDto employee)
     {
         if (employee is null)
             return BadRequest($"{nameof(employee)} object is null");
@@ -27,15 +27,15 @@ public class EmployeesController(IServiceManger service) : ControllerBase
         if (!ModelState.IsValid)
             return UnprocessableEntity(ModelState);
 
-        var employeeDto = service.EmployeeService
-            .CreateEmployeeForCompany(companyId, employee);
+        var employeeDto = await service.EmployeeService
+            .CreateEmployeeForCompanyAsync(companyId, employee);
 
         return CreatedAtAction(nameof(GetEmployee)
             , new { companyId, id = employeeDto.Id }, employeeDto);
     }
 
     [HttpPut("{id:guid}")]
-    public IActionResult UpdateEmployeeForCompany(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employeeForUpdate)
+    public async Task<IActionResult> UpdateEmployeeForCompany(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employeeForUpdate)
     {
         if (employeeForUpdate is null)
             return BadRequest($"{nameof(EmployeeForUpdateDto)} object is null");
@@ -43,22 +43,22 @@ public class EmployeesController(IServiceManger service) : ControllerBase
         if (!ModelState.IsValid)
             return UnprocessableEntity(ModelState);
 
-        service.EmployeeService
-            .UpdateEmployeeForCompany(companyId, id, employeeForUpdate, true);
+        await service.EmployeeService
+              .UpdateEmployeeForCompanyAsync(companyId, id, employeeForUpdate, true);
 
         return NoContent();
     }
 
 
     [HttpPatch("{id:guid}")]
-    public IActionResult PartiallyUpdateEmployeeForCompany(Guid companyId, Guid id
+    public async Task<IActionResult> PartiallyUpdateEmployeeForCompany(Guid companyId, Guid id
         , [FromBody] JsonPatchDocument<EmployeeForUpdateDto> patchDoc)
     {
         if (patchDoc is null)
             return BadRequest($"{nameof(patchDoc)} object sent from client is null.");
 
-        var (employeeToPatch, employeeEntity) = service.EmployeeService
-            .GetEmployeeForPatch(companyId, id, true);
+        var (employeeToPatch, employeeEntity) = await service.EmployeeService
+            .GetEmployeeForPatchAsync(companyId, id, true);
 
         patchDoc.ApplyTo(employeeToPatch, ModelState);
 
@@ -67,15 +67,15 @@ public class EmployeesController(IServiceManger service) : ControllerBase
         if (!ModelState.IsValid)
             return UnprocessableEntity(ModelState);
 
-        service.EmployeeService.SaveChangesForPatch(employeeToPatch, employeeEntity);
+        await service.EmployeeService.SaveChangesForPatchAsync(employeeToPatch, employeeEntity);
 
         return NoContent();
     }
 
     [HttpDelete("{id:guid}")]
-    public IActionResult DeleteEmployee(Guid companyId, Guid id)
+    public async Task<IActionResult> DeleteEmployee(Guid companyId, Guid id)
     {
-        service.EmployeeService.DeleteEmployeeFromCompany(companyId, id, false);
+        await service.EmployeeService.DeleteEmployeeFromCompanyAsync(companyId, id, false);
 
         return NoContent();
     }

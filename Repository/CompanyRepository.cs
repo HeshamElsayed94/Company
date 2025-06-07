@@ -1,12 +1,14 @@
 ﻿using Contracts;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository;
 
 public class CompanyRepository(RepositoryContext context)
     : RepositoryBase<Company>(context), ICompanyRepository
 {
-    public bool CompanyExists(Guid companyId) => ExistsByCondition(c => c.Id.Equals(companyId));
+    public async Task<bool> CompanyExistsAsync(Guid companyId)
+        => await FindByCondition(c => c.Id.Equals(companyId), false).AnyAsync();
 
     public void CreateCompany(Company company) => Create(company);
 
@@ -14,12 +16,12 @@ public class CompanyRepository(RepositoryContext context)
 
     public void DeleteCompany(Company company) => Delete(company);
 
-    public IEnumerable<Company> GetAllCompanies(bool trackChanges)
-        => [.. FindAll(trackChanges).OrderBy(c => c.Name)];
+    public async Task<IEnumerable<Company>> GetAllCompaniesAsync(bool trackChanges)
+        => await FindAll(trackChanges).OrderBy(c => c.Name).ToListAsync();
 
-    public IEnumerable<Company> GetByIds(IEnumerable<Guid> ids, bool trackChanges)
-        => [.. FindByCondition(x => ids.Contains(x.Id), trackChanges)];
+    public async Task<IEnumerable<Company>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges)
+        => await FindByCondition(x => ids.Contains(x.Id), trackChanges).ToListAsync();
 
-    public Company? GetCompany(Guid companyId, bool trackChanges) => FindByCondition(c => c.Id
-    .Equals(companyId), trackChanges).FirstOrDefault();
+    public async Task<Company?> GetCompanyAsync(Guid companyId, bool trackChanges)
+        => await FindByCondition(c => c.Id.Equals(companyId), trackChanges).FirstOrDefaultAsync();
 }

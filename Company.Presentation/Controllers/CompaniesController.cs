@@ -14,14 +14,16 @@ public class CompaniesController(IServiceManger service)
 
     [HttpGet("collection/({ids})")]
     public IActionResult GetCompanyCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
-        => Ok(service.CompanyService.GetByIds(ids, false));
+        => Ok(service.CompanyService.GetByIdsAsync(ids, false));
 
 
     [HttpGet]
-    public IActionResult GetCompanies() => Ok(service.CompanyService.GetAllCompanies(false));
+    public async Task<IActionResult> GetCompanies()
+        => Ok(await service.CompanyService.GetAllCompaniesAsync(false));
 
     [HttpGet("{id:guid}")]
-    public ActionResult GetCompany(Guid id) => Ok(service.CompanyService.GetCompany(id, false));
+    public async Task<ActionResult> GetCompany(Guid id)
+        => Ok(await service.CompanyService.GetCompanyAsync(id, false));
 
     [HttpPost]
     public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
@@ -32,16 +34,16 @@ public class CompaniesController(IServiceManger service)
         if (!ModelState.IsValid)
             return UnprocessableEntity(ModelState);
 
-        var createdCompany = service.CompanyService.CreateCompany(company);
+        var createdCompany = service.CompanyService.CreateCompanyAsync(company);
 
         return CreatedAtAction(nameof(GetCompany), new { id = createdCompany.Id }, createdCompany);
     }
 
     [HttpPost("collection")]
-    public IActionResult CreateCompanyCollection([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
+    public async Task<IActionResult> CreateCompanyCollection([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
     {
-        var (companies, ids) = service.CompanyService
-            .CreateCompanyCollection(companyCollection);
+        var (companies, ids) = await service.CompanyService
+            .CreateCompanyCollectionAsync(companyCollection);
 
         return CreatedAtAction(nameof(GetCompanyCollection), new { ids }, companies);
     }
@@ -55,19 +57,19 @@ public class CompaniesController(IServiceManger service)
         if (!ModelState.IsValid)
             return UnprocessableEntity(ModelState);
 
-        service.CompanyService.UpdateCompany(id, companyForUpdate, true);
+        service.CompanyService.UpdateCompanyAsync(id, companyForUpdate, true);
 
         return NoContent();
     }
 
     [HttpPatch("{id:guid}")]
-    public IActionResult PartiallyUpdateCompany(Guid id, [FromBody] JsonPatchDocument<CompanyForUpdateDto> pathDoc)
+    public async Task<IActionResult> PartiallyUpdateCompany(Guid id, [FromBody] JsonPatchDocument<CompanyForUpdateDto> pathDoc)
     {
         if (pathDoc is null)
             return BadRequest($"{nameof(pathDoc)} object sent from client is null.");
 
-        var (companyToPatch, companyEntity) = service.CompanyService
-            .GetCompanyForPatch(id, true);
+        var (companyToPatch, companyEntity) = await service.CompanyService
+            .GetCompanyForPatchAsync(id, true);
 
         pathDoc.ApplyTo(companyToPatch, ModelState);
 
@@ -76,7 +78,7 @@ public class CompaniesController(IServiceManger service)
         if (!ModelState.IsValid)
             return UnprocessableEntity(ModelState);
 
-        service.CompanyService.SaveChangesForPatch(companyToPatch, companyEntity);
+        await service.CompanyService.SaveChangesForPatchAsync(companyToPatch, companyEntity);
 
         return NoContent();
     }
@@ -84,7 +86,7 @@ public class CompaniesController(IServiceManger service)
     [HttpDelete("{id:guid}")]
     public IActionResult DeleteCompany(Guid id)
     {
-        service.CompanyService.DeleteCompany(id, false);
+        service.CompanyService.DeleteCompanyAsync(id, false);
 
         return NoContent();
     }

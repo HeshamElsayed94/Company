@@ -13,9 +13,6 @@ public abstract class RepositoryBase<T>(RepositoryContext context) : IRepository
 
     public void Delete(T entity) => context.Remove(entity);
 
-    public bool ExistsByCondition(Expression<Func<T, bool>> expression) => context.Set<T>().Any(expression);
-
-
     public IQueryable<T> FindAll(bool trackChanges)
         => !trackChanges
         ? context.Set<T>().AsNoTrackingWithIdentityResolution()
