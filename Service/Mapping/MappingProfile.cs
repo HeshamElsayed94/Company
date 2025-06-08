@@ -30,9 +30,10 @@ public partial class MappingProfile
 
     public partial EmployeeDto ToEmployeeDto(Employee employee);
 
+
     public partial EmployeeForUpdateDto ToEmployeeForUpdateDto(Employee employee);
 
-    public partial IEnumerable<EmployeeDto> ToEmployeeDto(IEnumerable<Employee> company);
+    public partial IEnumerable<EmployeeDto> ToEmployeeDto(IEnumerable<Employee> employees);
 
     public partial Employee ToEmployeeEntity(EmployeeForCreationDto employeeDto);
 

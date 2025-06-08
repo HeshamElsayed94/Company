@@ -4,6 +4,7 @@ using Entities.Models;
 using Service.Contracts;
 using Service.Mapping;
 using Shared.DTOs;
+using Shared.RequestFeatures;
 
 namespace Service;
 
@@ -56,14 +57,14 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
         return (employeeToPatch, employeeEntity);
     }
 
-    public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(Guid companyId, bool trackChanges)
+    public async Task<(IEnumerable<EmployeeDto> employees, MetaData metaData)> GetEmployeesAsync(Guid companyId, EmployeeParameters employeeParameters, bool trackChanges)
     {
         await CheckIfCompanyExists(companyId);
 
-        var employees = await repository.Employees.GetEmployeesAsync(companyId, trackChanges);
+        var pagedEmployees = await repository.Employees
+            .GetEmployeesAsync(companyId, employeeParameters, trackChanges);
 
-        return [.. _mapper.ToEmployeeDto(employees)];
-
+        return ( _mapper.ToEmployeeDto(pagedEmployees), pagedEmployees.MetaData);
     }
 
     public async Task SaveChangesForPatchAsync(EmployeeForUpdateDto employeeToPatch, Employee employeeEntity)
