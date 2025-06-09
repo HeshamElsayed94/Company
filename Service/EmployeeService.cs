@@ -59,12 +59,15 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
 
     public async Task<(IEnumerable<EmployeeDto> employees, MetaData metaData)> GetEmployeesAsync(Guid companyId, EmployeeParameters employeeParameters, bool trackChanges)
     {
+        if (!employeeParameters.ValidAgeRange)
+            throw new MaxAgeRangeBadRequestException();
+
         await CheckIfCompanyExists(companyId);
 
         var pagedEmployees = await repository.Employees
             .GetEmployeesAsync(companyId, employeeParameters, trackChanges);
 
-        return ( _mapper.ToEmployeeDto(pagedEmployees), pagedEmployees.MetaData);
+        return (_mapper.ToEmployeeDto(pagedEmployees), pagedEmployees.MetaData);
     }
 
     public async Task SaveChangesForPatchAsync(EmployeeForUpdateDto employeeToPatch, Employee employeeEntity)
