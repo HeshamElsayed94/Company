@@ -1,6 +1,6 @@
 ﻿using System.Linq.Dynamic.Core;
-using System.Reflection;
 using Entities.Models;
+using Repository.Utility;
 
 namespace Repository.Extensions;
 
@@ -22,32 +22,10 @@ public static class RepositoryEmployeeExtensions
         if (string.IsNullOrWhiteSpace(orderByQueryString))
             return employees.OrderBy(e => e.Name);
 
-        var orderParams = orderByQueryString.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var orderQuery = OrderQueryBuilder.CreateOrderQuery<Employee>(orderByQueryString);
 
-        var propertyInfos = typeof(Employee).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-
-        var orderParts = new List<string>();
-
-        foreach (var param in orderParams)
-        {
-            var propertyNameFromQurey = param.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0];
-
-            var objectProperty = propertyInfos.FirstOrDefault(pi
-                => pi.Name.Equals(propertyNameFromQurey, StringComparison.InvariantCultureIgnoreCase));
-
-            if (objectProperty is not null)
-            {
-                var direction = param.EndsWith(" desc") ? "descending" : "ascending";
-
-                orderParts.Add($"{objectProperty.Name} {direction}");
-            }
-        }
-
-        if (orderParts.Count == 0)
+        if (string.IsNullOrWhiteSpace(orderQuery))
             return employees.OrderBy(e => e.Name);
-
-        var orderQuery = string.Join(',', orderParts);
 
         return employees.OrderBy(orderQuery);
 
