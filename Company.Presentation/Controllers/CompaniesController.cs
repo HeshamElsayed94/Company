@@ -1,5 +1,6 @@
 ﻿using CompanyEmployees.Presentation.ActionFilters;
 using CompanyEmployees.Presentation.ModelBinders;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
@@ -12,6 +13,14 @@ namespace CompanyEmployees.Presentation.Controllers;
 public class CompaniesController(IServiceManger service)
     : ControllerBase
 {
+
+    [HttpOptions]
+    public IActionResult GetCompaniesOptions()
+    {
+        Response.Headers.Append("Allow", "GET, OPTIONS, POST, PUT,PATCH, DELETE");
+
+        return Ok();
+    }
 
     [HttpGet("collection/({ids})")]
     public IActionResult GetCompanyCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)

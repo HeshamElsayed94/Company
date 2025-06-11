@@ -13,7 +13,17 @@ namespace CompanyEmployees.Presentation.Controllers;
 [ApiController]
 public class EmployeesController(IServiceManger service) : ControllerBase
 {
+    [HttpOptions]
+    public IActionResult GetCompaniesOptions()
+    {
+        Response.Headers.Append("Allow", "GET, OPTIONS, POST, PUT,Patch, DELETE");
+
+        return Ok();
+    }
+
+
     [HttpGet]
+    [HttpHead]
     public async Task<IActionResult> GetEmployees(Guid companyId, [FromQuery] EmployeeParameters employeeParameters)
     {
         var (employees, metaData) = await service.EmployeeService
