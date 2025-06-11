@@ -1,4 +1,5 @@
-﻿using CompanyEmployees.Presentation.ActionFilters;
+﻿using Asp.Versioning;
+using CompanyEmployees.Presentation.ActionFilters;
 using CompanyEmployees.Presentation.ModelBinders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -8,6 +9,7 @@ using Shared.DTOs;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
+[ApiVersion("1.0")]
 [Route("api/companies")]
 [ApiController]
 public class CompaniesController(IServiceManger service)
@@ -27,7 +29,7 @@ public class CompaniesController(IServiceManger service)
         => Ok(service.CompanyService.GetByIdsAsync(ids, false));
 
 
-    [HttpGet]
+    [HttpGet(Name = "GetCompanies")]
     public async Task<IActionResult> GetCompanies()
         => Ok(await service.CompanyService.GetAllCompaniesAsync(false));
 
@@ -35,7 +37,7 @@ public class CompaniesController(IServiceManger service)
     public async Task<ActionResult> GetCompany(Guid id)
         => Ok(await service.CompanyService.GetCompanyAsync(id, false));
 
-    [HttpPost]
+    [HttpPost(Name = "CreateCompany")]
     [ServiceFilter(typeof(ValidationFilterAttribute))]
     public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
     {

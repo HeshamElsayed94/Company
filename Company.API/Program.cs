@@ -27,7 +27,7 @@ new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson()
 
 #endregion NewtoSoft config to patch request only
 
-
+builder.Services.ConfigureVersioning();
 builder.Services.AddControllers(config =>
     {
         config.RespectBrowserAcceptHeader = true;
@@ -60,6 +60,9 @@ builder.Services.AddScoped<ValidationFilterAttribute>();
 
 builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
 
+
+
+
 #endregion Services
 
 builder.Services.AddConfigureSqlContext(builder.Configuration);
@@ -90,6 +93,7 @@ app.UseForwardedHeaders(new()
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
+
 
 app.UseCors("CorsPolicy");
 

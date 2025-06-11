@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using Asp.Versioning;
+using Contracts;
 using LoggerService;
 using Microsoft.EntityFrameworkCore;
 using Repository;
@@ -51,4 +52,22 @@ public static class ServiceExtensions
 
     public static IMvcBuilder AddCustomCSVFormatter(this IMvcBuilder builder)
         => builder.AddMvcOptions(config => config.OutputFormatters.Add(new CsvOutputFormatter()));
+
+    public static void ConfigureVersioning(this IServiceCollection services)
+    {
+        services.AddApiVersioning(opt =>
+        {
+            opt.ReportApiVersions = true;
+            opt.AssumeDefaultVersionWhenUnspecified = true;
+            opt.DefaultApiVersion = new ApiVersion(1, 0);
+            opt.ApiVersionReader = ApiVersionReader.Combine(new HeaderApiVersionReader("api-version"),
+                //new QueryStringApiVersionReader("api-version"),
+                new MediaTypeApiVersionReader("api-version"));
+        }).AddMvc()
+        .AddApiExplorer(op =>
+        {
+            op.GroupNameFormat = "'v'V";
+            op.SubstituteApiVersionInUrl = true;
+        });
+    }
 }
