@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using AspNetCoreRateLimit;
 using Contracts;
 using LoggerService;
 using Microsoft.EntityFrameworkCore;
@@ -69,5 +70,32 @@ public static class ServiceExtensions
             op.GroupNameFormat = "'v'V";
             op.SubstituteApiVersionInUrl = true;
         });
+    }
+
+    public static void AddConfigureRateLimitingOptions(this IServiceCollection services)
+    {
+        var rateLimitRules = new List<RateLimitRule>
+        {
+            new()
+            {
+                Endpoint = "*",
+                Limit = 100,
+                Period = "5m"
+            },
+        new()
+        {
+            Endpoint = "*",
+            Limit = 1000,
+            Period = "1d"
+        }
+        };
+
+        services.Configure<IpRateLimitOptions>(opt => opt.GeneralRules = rateLimitRules);
+
+        services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+        services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+        services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+        services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+
     }
 }

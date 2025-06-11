@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using AspNetCoreRateLimit;
 using CompanyEmployees.API.Extensions;
 using CompanyEmployees.Presentation.ActionFilters;
 using Contracts;
@@ -73,6 +74,11 @@ builder.Services.AddHttpCacheHeaders(expirationOpt =>
 },
 validationOpt => validationOpt.MustRevalidate = true);
 
+builder.Services.AddMemoryCache();
+
+builder.Services.AddConfigureRateLimitingOptions();
+builder.Services.AddHttpContextAccessor();
+
 #endregion Services
 
 builder.Services.AddConfigureSqlContext(builder.Configuration);
@@ -104,6 +110,7 @@ app.UseForwardedHeaders(new()
     ForwardedHeaders = ForwardedHeaders.All
 });
 
+app.UseIpRateLimiting();
 
 app.UseCors("CorsPolicy");
 
