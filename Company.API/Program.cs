@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using NLog;
+using Service.DataShaping;
 using Service.Extensions;
+using Shared.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +57,8 @@ builder.Services.AddConfigureCompanyServices();
 builder.Services.AddConfigureEmployeeServices();
 
 builder.Services.AddScoped<ValidationFilterAttribute>();
+
+builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
 
 #endregion Services
 

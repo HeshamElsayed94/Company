@@ -7,14 +7,6 @@ namespace CompanyEmployees.API.Extensions;
 
 public static class ExceptionMiddlewareExtensions
 {
-    private static int GetResponseStatusCode(Exception exception)
-        => exception switch
-        {
-            NotFoundException => StatusCodes.Status404NotFound,
-            BadRequestException => StatusCodes.Status400BadRequest,
-            _ => StatusCodes.Status500InternalServerError,
-        };
-
     public static void AddConfigureExceptionHandler(this WebApplication app, ILoggerManager logger)
     {
         app.UseExceptionHandler(appError => appError.Run(async context =>
@@ -39,4 +31,12 @@ public static class ExceptionMiddlewareExtensions
 
 
     }
+
+    private static int GetResponseStatusCode(Exception exception)
+            => exception switch
+            {
+                NotFoundException => StatusCodes.Status404NotFound,
+                BadRequestException => StatusCodes.Status400BadRequest,
+                _ => StatusCodes.Status500InternalServerError,
+            };
 }

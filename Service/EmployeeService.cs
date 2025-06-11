@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using System.Dynamic;
+using Contracts;
 using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
@@ -8,7 +9,11 @@ using Shared.RequestFeatures;
 
 namespace Service;
 
-internal sealed class EmployeeService(IRepositoryManager repository, ILoggerManager loggerManager) : IEmployeeService
+internal sealed class EmployeeService(
+    IRepositoryManager repository,
+    IDataShaper<EmployeeDto> dataShaper,
+    ILoggerManager loggerManager)
+    : IEmployeeService
 {
     private readonly MappingProfile _mapper = new();
 
@@ -57,7 +62,8 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
         return (employeeToPatch, employeeEntity);
     }
 
-    public async Task<(IEnumerable<EmployeeDto> employees, MetaData metaData)> GetEmployeesAsync(Guid companyId, EmployeeParameters employeeParameters, bool trackChanges)
+    public async Task<(IEnumerable<ExpandoObject> employees, MetaData metaData)> GetEmployeesAsync
+        (Guid companyId, EmployeeParameters employeeParameters, bool trackChanges)
     {
         if (!employeeParameters.ValidAgeRange)
             throw new MaxAgeRangeBadRequestException();
@@ -67,7 +73,11 @@ internal sealed class EmployeeService(IRepositoryManager repository, ILoggerMana
         var pagedEmployees = await repository.Employees
             .GetEmployeesAsync(companyId, employeeParameters, trackChanges);
 
-        return (_mapper.ToEmployeeDto(pagedEmployees), pagedEmployees.MetaData);
+        var employeesDto = _mapper.ToEmployeeDto(pagedEmployees);
+
+        var shapedData = dataShaper.ShapeDate(employeesDto, employeeParameters.Fields);
+
+        return (shapedData, pagedEmployees.MetaData);
     }
 
     public async Task SaveChangesForPatchAsync(EmployeeForUpdateDto employeeToPatch, Employee employeeEntity)

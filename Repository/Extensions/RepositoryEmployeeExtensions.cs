@@ -13,8 +13,8 @@ public static class RepositoryEmployeeExtensions
     {
         if (string.IsNullOrWhiteSpace(searchTerm))
             return employees;
-        return employees
-            .Where(e => e.Name!.Contains(searchTerm));
+
+        return employees.Where(e => e.Name!.Contains(searchTerm));
     }
 
     public static IQueryable<Employee> Sort(this IQueryable<Employee> employees, string? orderByQueryString)
