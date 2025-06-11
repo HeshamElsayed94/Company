@@ -33,6 +33,10 @@ builder.Services.AddControllers(config =>
         config.RespectBrowserAcceptHeader = true;
         config.ReturnHttpNotAcceptable = true;
         config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
+        config.CacheProfiles.Add("120SecondsDuration", new()
+        {
+            Duration = 120
+        });
     }).AddXmlDataContractSerializerFormatters()
     .AddCustomCSVFormatter()
     .AddJsonOptions(op => op.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
@@ -60,8 +64,14 @@ builder.Services.AddScoped<ValidationFilterAttribute>();
 
 builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
 
+builder.Services.AddResponseCaching();
 
-
+builder.Services.AddHttpCacheHeaders(expirationOpt =>
+{
+    expirationOpt.MaxAge = 120;
+    expirationOpt.CacheLocation = Marvin.Cache.Headers.CacheLocation.Public;
+},
+validationOpt => validationOpt.MustRevalidate = true);
 
 #endregion Services
 
@@ -96,6 +106,9 @@ app.UseForwardedHeaders(new()
 
 
 app.UseCors("CorsPolicy");
+
+app.UseResponseCaching();
+app.UseHttpCacheHeaders();
 
 app.UseAuthorization();
 
