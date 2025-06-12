@@ -27,8 +27,8 @@ public class ArrayModelBinder : IModelBinder
 
         var converter = TypeDescriptor.GetConverter(genericType);
 
-        var objectArray = providedValue.Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => converter.ConvertFromString(x.Trim())).ToArray();
+        var objectArray = providedValue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(x => converter.ConvertFromInvariantString(x)).ToArray();
 
         var guidArray = Array.CreateInstance(genericType, objectArray.Length);
 

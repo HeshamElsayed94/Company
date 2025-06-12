@@ -25,8 +25,8 @@ public class CompaniesController(IServiceManger service)
     }
 
     [HttpGet("collection/({ids})")]
-    public IActionResult GetCompanyCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
-        => Ok(service.CompanyService.GetByIdsAsync(ids, false));
+    public async Task<IActionResult> GetCompanyCollection([FromRoute][ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
+        => Ok(await service.CompanyService.GetByIdsAsync(ids, false));
 
 
     [HttpGet(Name = "GetCompanies")]
