@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
-using AspNetCoreRateLimit;
 using CompanyEmployees.API.Extensions;
 using CompanyEmployees.Presentation.ActionFilters;
 using Contracts;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -29,16 +29,16 @@ new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson()
 
 #endregion NewtoSoft config to patch request only
 
-builder.Services.ConfigureVersioning();
+builder.Services.AddConfigureVersioning();
 builder.Services.AddControllers(config =>
     {
         config.RespectBrowserAcceptHeader = true;
         config.ReturnHttpNotAcceptable = true;
         config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
-        config.CacheProfiles.Add("120SecondsDuration", new()
-        {
-            Duration = 120
-        });
+        //config.CacheProfiles.Add("120SecondsDuration", new()
+        //{
+        //    Duration = 120
+        //});
     }).AddXmlDataContractSerializerFormatters()
     .AddCustomCSVFormatter()
     .AddJsonOptions(op => op.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
@@ -70,10 +70,11 @@ builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
 
 builder.Services.AddResponseCaching();
 
+
 builder.Services.AddHttpCacheHeaders(expirationOpt =>
 {
-    expirationOpt.MaxAge = 120;
-    expirationOpt.CacheLocation = Marvin.Cache.Headers.CacheLocation.Public;
+    expirationOpt.MaxAge = 60;
+    expirationOpt.CacheLocation = CacheLocation.Public;
 },
 validationOpt => validationOpt.MustRevalidate = true);
 
@@ -84,6 +85,10 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication();
 builder.Services.AddConfigureIdentity();
+
+builder.Services.AddConfigureAuthenticationService();
+
+builder.Services.AddConfigureJWT(builder.Configuration);
 
 #endregion Services
 
@@ -116,7 +121,7 @@ app.UseForwardedHeaders(new()
     ForwardedHeaders = ForwardedHeaders.All
 });
 
-app.UseIpRateLimiting();
+//app.UseIpRateLimiting();
 
 app.UseCors("CorsPolicy");
 

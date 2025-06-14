@@ -26,4 +26,16 @@ public class AuthenticationController(IServiceManger service) : ControllerBase
 
         return StatusCode(StatusCodes.Status201Created);
     }
+
+    [HttpPost("login")]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
+    public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto userForAuthentication)
+    {
+        var user = await service.AuthenticationService.ValidateUser(userForAuthentication);
+
+        if (user is null)
+            return Unauthorized();
+
+        return Ok(new { Token = await service.AuthenticationService.CreateToken(user) });
+    }
 }

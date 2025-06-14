@@ -1,10 +1,13 @@
-﻿using Asp.Versioning;
+﻿using System.Text;
+using Asp.Versioning;
 using AspNetCoreRateLimit;
 using Contracts;
 using Entities.Models;
 using LoggerService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Repository;
 using Service;
 using Service.Contracts;
@@ -66,7 +69,7 @@ public static class ServiceExtensions
     public static IMvcBuilder AddCustomCSVFormatter(this IMvcBuilder builder)
         => builder.AddMvcOptions(config => config.OutputFormatters.Add(new CsvOutputFormatter()));
 
-    public static void ConfigureVersioning(this IServiceCollection services)
+    public static void AddConfigureVersioning(this IServiceCollection services)
     {
         services.AddApiVersioning(opt =>
         {
@@ -124,5 +127,29 @@ public static class ServiceExtensions
         })
             .AddEntityFrameworkStores<RepositoryContext>()
             .AddDefaultTokenProviders();
+    }
+
+    public static void AddConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+    {
+        var jwtSettings = configuration.GetSection("JwtSettings");
+
+        var secretKey = Environment.GetEnvironmentVariable("SECRET")
+            ?? throw new Exception("Secret key not found");
+
+        services.AddAuthentication(opt => opt.DefaultAuthenticateScheme =
+            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options => options.TokenValidationParameters = new()
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ClockSkew = TimeSpan.FromSeconds(5),
+
+                ValidIssuer = jwtSettings["validIssuer"],
+                ValidAudience = jwtSettings["validAudience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+            });
+
     }
 }

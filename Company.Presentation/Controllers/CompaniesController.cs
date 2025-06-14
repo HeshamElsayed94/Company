@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using CompanyEmployees.Presentation.ActionFilters;
 using CompanyEmployees.Presentation.ModelBinders;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,7 @@ public class CompaniesController(IServiceManger service)
 
 
     [HttpGet(Name = "GetCompanies")]
+    [Authorize(Roles = "Manager")]
     public async Task<IActionResult> GetCompanies()
         => Ok(await service.CompanyService.GetAllCompaniesAsync(false));
 
