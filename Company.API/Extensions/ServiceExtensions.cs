@@ -137,7 +137,7 @@ public static class ServiceExtensions
             ?? throw new Exception("Secret key not found");
 
         services.AddAuthentication(opt => opt.DefaultAuthenticateScheme =
-            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme)
+                        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options => options.TokenValidationParameters = new()
             {
                 ValidateIssuer = true,

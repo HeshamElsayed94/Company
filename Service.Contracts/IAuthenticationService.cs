@@ -11,6 +11,6 @@ public interface IAuthenticationService
 
     Task<User?> ValidateUser(UserForAuthenticationDto userForAuth);
 
-    Task<string> CreateToken(User user);
+    Task<TokenDto> CreateToken(User user, bool populateExp);
 
 }

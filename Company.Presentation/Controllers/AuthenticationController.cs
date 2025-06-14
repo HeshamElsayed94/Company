@@ -36,6 +36,8 @@ public class AuthenticationController(IServiceManger service) : ControllerBase
         if (user is null)
             return Unauthorized();
 
-        return Ok(new { Token = await service.AuthenticationService.CreateToken(user) });
+        var tokenDto = await service.AuthenticationService.CreateToken(user, true);
+
+        return Ok(tokenDto);
     }
 }
