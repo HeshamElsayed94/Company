@@ -1,9 +1,13 @@
 ﻿using Asp.Versioning;
 using AspNetCoreRateLimit;
 using Contracts;
+using Entities.Models;
 using LoggerService;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Repository;
+using Service;
+using Service.Contracts;
 
 namespace CompanyEmployees.API.Extensions;
 
@@ -43,6 +47,14 @@ public static class ServiceExtensions
 
         services.AddScoped(provider =>
                 new Lazy<IEmployeeRepository>(() => provider.GetRequiredService<IEmployeeRepository>()));
+    }
+
+    public static void AddConfigureAuthenticationService(this IServiceCollection services)
+    {
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+        services.AddScoped(provider =>
+                new Lazy<IAuthenticationService>(() => provider.GetRequiredService<IAuthenticationService>()));
     }
 
     public static void AddConfigureSqlContext(this IServiceCollection services,
@@ -97,5 +109,20 @@ public static class ServiceExtensions
         services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
         services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 
+    }
+
+    public static void AddConfigureIdentity(this IServiceCollection services)
+    {
+        services.AddIdentity<User, IdentityRole>(o =>
+        {
+            o.Password.RequireDigit = true;
+            o.Password.RequireLowercase = false;
+            o.Password.RequireUppercase = false;
+            o.Password.RequireNonAlphanumeric = false;
+            o.Password.RequiredLength = 6;
+            o.User.RequireUniqueEmail = true;
+        })
+            .AddEntityFrameworkStores<RepositoryContext>()
+            .AddDefaultTokenProviders();
     }
 }

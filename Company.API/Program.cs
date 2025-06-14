@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using NLog;
 using Service.DataShaping;
 using Service.Extensions;
+using Service.Mapping;
 using Shared.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,6 +58,8 @@ builder.Services.AddConfigureEmployeeRepository();
 
 #region Services
 
+builder.Services.AddSingleton<MappingProfile>();
+
 builder.Services.AddConfigureServiceManager();
 builder.Services.AddConfigureCompanyServices();
 builder.Services.AddConfigureEmployeeServices();
@@ -78,6 +81,9 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddConfigureRateLimitingOptions();
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddAuthentication();
+builder.Services.AddConfigureIdentity();
 
 #endregion Services
 
@@ -117,6 +123,7 @@ app.UseCors("CorsPolicy");
 app.UseResponseCaching();
 app.UseHttpCacheHeaders();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

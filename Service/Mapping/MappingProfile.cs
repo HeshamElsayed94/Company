@@ -40,4 +40,11 @@ public partial class MappingProfile
     public partial void UpdateEmployee(EmployeeForUpdateDto employeeForUpdate, Employee employee);
 
     #endregion Employee
+
+    #region User
+
+    public partial User ToUserEntity(UserForRegistrationDto userForRegistrationDto);
+
+
+    #endregion User
 }
