@@ -1,12 +1,12 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using AspNetCoreRateLimit;
+using CompanyEmployees.API;
 using CompanyEmployees.API.Extensions;
 using CompanyEmployees.Presentation.ActionFilters;
 using Contracts;
 using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.Options;
 using NLog;
 using Service.DataShaping;
 using Service.Extensions;
@@ -19,30 +19,24 @@ LogManager.Setup().LoadConfiguration(op => Path.Combine(Directory.GetCurrentDire
 
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
-#region NewtoSoft config to patch request only
-
-NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter() =>
-new ServiceCollection().AddLogging().AddControllers().AddNewtonsoftJson()
-.Services.BuildServiceProvider()
-.GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters
-.OfType<NewtonsoftJsonPatchInputFormatter>().First();
-
-#endregion NewtoSoft config to patch request only
-
 builder.Services.AddConfigureVersioning();
+
 builder.Services.AddControllers(config =>
     {
         config.RespectBrowserAcceptHeader = true;
         config.ReturnHttpNotAcceptable = true;
-        config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
         //config.CacheProfiles.Add("120SecondsDuration", new()
         //{
         //    Duration = 120
         //});
-    }).AddXmlDataContractSerializerFormatters()
+    })
+    .AddXmlDataContractSerializerFormatters()
     .AddCustomCSVFormatter()
     .AddJsonOptions(op => op.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
+
+
+builder.Services.ConfigureOptions<ConfigureJsonPatchInputFormatter>();
 
 builder.Services.AddConfigureCors();
 builder.Services.AddConfigureIISIntegration();
@@ -104,7 +98,6 @@ var logger = app.Services.GetRequiredService<ILoggerManager>();
 
 app.AddConfigureExceptionHandler(logger);
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -123,7 +116,7 @@ app.UseForwardedHeaders(new()
     ForwardedHeaders = ForwardedHeaders.All
 });
 
-//app.UseIpRateLimiting();
+app.UseIpRateLimiting();
 
 app.UseCors("CorsPolicy");
 
@@ -132,6 +125,7 @@ app.UseHttpCacheHeaders();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 

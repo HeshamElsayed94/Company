@@ -113,7 +113,7 @@ public sealed class AuthenticationService : IAuthenticationService
 
     private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
     {
-        var tokenValidationParameters = new TokenValidationParameters
+        var tokenValidationParameters = new TokenValidationParameters()
         {
             ValidateAudience = true,
             ValidateIssuer = true,
