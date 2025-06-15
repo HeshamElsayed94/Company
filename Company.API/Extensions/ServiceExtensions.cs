@@ -2,6 +2,7 @@
 using Asp.Versioning;
 using AspNetCoreRateLimit;
 using Contracts;
+using Entities.ConfigurationModels;
 using Entities.Models;
 using LoggerService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -131,7 +132,9 @@ public static class ServiceExtensions
 
     public static void AddConfigureJWT(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtSettings = configuration.GetSection("JwtSettings");
+        var jwtConfiguration = new JwtConfiguration();
+
+        configuration.Bind(jwtConfiguration.Section, jwtConfiguration);
 
         var secretKey = Environment.GetEnvironmentVariable("SECRET")
             ?? throw new Exception("Secret key not found");
@@ -146,8 +149,8 @@ public static class ServiceExtensions
                 ValidateIssuerSigningKey = true,
                 ClockSkew = TimeSpan.FromSeconds(5),
 
-                ValidIssuer = jwtSettings["validIssuer"],
-                ValidAudience = jwtSettings["validAudience"],
+                ValidIssuer = jwtConfiguration.ValidIssuer,
+                ValidAudience = jwtConfiguration.ValidAudience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
             });
 
