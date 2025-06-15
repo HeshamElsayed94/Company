@@ -164,28 +164,20 @@ public static class ServiceExtensions
     {
         services.AddSwaggerGen(s =>
         {
-            s.SwaggerDoc("v1", new OpenApiInfo()
+            OpenApiInfo GenerateInfo(string version) => new()
             {
                 Title = "Company Employees API",
-                Version = "v1",
+                Version = version,
                 Description = "CompanyEmployees API by Hesham Elsayed",
                 Contact = new OpenApiContact
                 {
                     Name = "Hesham Elsayed",
                     Email = "HeshamElsayedAhmed.Doe@outlook.com",
-                },
-            });
-            s.SwaggerDoc("v2", new OpenApiInfo()
-            {
-                Title = "Company Employees API",
-                Version = "v2",
-                Description = "CompanyEmployees API by Hesham Elsayed",
-                Contact = new OpenApiContact
-                {
-                    Name = "Hesham Elsayed",
-                    Email = "HeshamElsayedAhmed.Doe@outlook.com",
-                },
-            });
+                }
+            };
+
+            s.SwaggerDoc("v1", GenerateInfo("v1"));
+            s.SwaggerDoc("v2", GenerateInfo("v2"));
 
             s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
