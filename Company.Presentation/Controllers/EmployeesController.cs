@@ -9,6 +9,7 @@ using Shared.RequestFeatures;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
+[ApiExplorerSettings(GroupName = "v1")]
 [Route("api/companies/{companyId:guid}/employees")]
 [ApiController]
 public class EmployeesController(IServiceManger service) : ControllerBase

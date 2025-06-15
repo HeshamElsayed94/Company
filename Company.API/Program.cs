@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Asp.Versioning.ApiExplorer;
 using AspNetCoreRateLimit;
 using CompanyEmployees.API;
 using CompanyEmployees.API.Extensions;
@@ -88,23 +89,37 @@ builder.Services.AddJwtConfiguration(builder.Configuration);
 
 #endregion Services
 
+
 builder.Services.AddConfigureSqlContext(builder.Configuration);
 
-builder.Services.AddOpenApi().AddSwaggerGen();
+builder.Services.AddOpenApi();
+builder.Services.AddConfigureSwagger();
 
 var app = builder.Build();
+
 
 var logger = app.Services.GetRequiredService<ILoggerManager>();
 
 app.AddConfigureExceptionHandler(logger);
 
-if (app.Environment.IsDevelopment())
+app.MapOpenApi();
+
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-else
+
+    var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+    foreach (var description in provider.ApiVersionDescriptions)
+    {
+        options.SwaggerEndpoint(
+            $"/swagger/{description.GroupName}/swagger.json",
+            $"CompanyEmployees.API {description.GroupName.ToUpperInvariant()}"
+        );
+    }
+});
+
+if (!app.Environment.IsDevelopment())
 {
     app.UseHsts();
 }

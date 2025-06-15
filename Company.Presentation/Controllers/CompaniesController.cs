@@ -1,5 +1,4 @@
-﻿using Asp.Versioning;
-using CompanyEmployees.Presentation.ActionFilters;
+﻿using CompanyEmployees.Presentation.ActionFilters;
 using CompanyEmployees.Presentation.ModelBinders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +9,8 @@ using Shared.DTOs;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
-[ApiVersion("1.0")]
+
+[ApiExplorerSettings(GroupName = "v1")]
 [Route("api/companies")]
 [ApiController]
 public class CompaniesController(IServiceManger service)
@@ -29,7 +29,10 @@ public class CompaniesController(IServiceManger service)
     public async Task<IActionResult> GetCompanyCollection([FromRoute][ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
         => Ok(await service.CompanyService.GetByIdsAsync(ids, false));
 
-
+    /// <summary>
+    /// Gets the list of all companies
+    /// </summary>
+    /// <returns>The companies list</returns>
     [HttpGet(Name = "GetCompanies")]
     [Authorize(Roles = "Manager")]
     public async Task<IActionResult> GetCompanies()

@@ -5,6 +5,7 @@ using Shared.DTOs;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
+[ApiExplorerSettings(GroupName = "v1")]
 [Route("api/token")]
 [ApiController]
 public class TokenController(IServiceManger service) : ControllerBase

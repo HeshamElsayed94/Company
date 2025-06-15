@@ -6,6 +6,7 @@ using Shared.DTOs;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
+[ApiExplorerSettings(GroupName = "v1")]
 [Route("api/authentication")]
 [ApiController]
 public class AuthenticationController(IServiceManger service) : ControllerBase

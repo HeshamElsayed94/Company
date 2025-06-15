@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Repository;
 using Service;
 using Service.Contracts;
@@ -80,7 +81,7 @@ public static class ServiceExtensions
             opt.ApiVersionReader = ApiVersionReader.Combine(new HeaderApiVersionReader("api-version"),
                 //new QueryStringApiVersionReader("api-version"),
                 new MediaTypeApiVersionReader("api-version"));
-        }).AddMvc()
+        })
         .AddApiExplorer(op =>
         {
             op.GroupNameFormat = "'v'V";
@@ -158,4 +159,65 @@ public static class ServiceExtensions
 
     public static void AddJwtConfiguration(this IServiceCollection services, IConfiguration configuration)
             => services.Configure<JwtConfiguration>(configuration.GetSection("JwtSettings"));
+
+    public static void AddConfigureSwagger(this IServiceCollection services)
+    {
+        services.AddSwaggerGen(s =>
+        {
+            s.SwaggerDoc("v1", new OpenApiInfo()
+            {
+                Title = "Company Employees API",
+                Version = "v1",
+                Description = "CompanyEmployees API by Hesham Elsayed",
+                Contact = new OpenApiContact
+                {
+                    Name = "Hesham Elsayed",
+                    Email = "HeshamElsayedAhmed.Doe@outlook.com",
+                },
+            });
+            s.SwaggerDoc("v2", new OpenApiInfo()
+            {
+                Title = "Company Employees API",
+                Version = "v2",
+                Description = "CompanyEmployees API by Hesham Elsayed",
+                Contact = new OpenApiContact
+                {
+                    Name = "Hesham Elsayed",
+                    Email = "HeshamElsayedAhmed.Doe@outlook.com",
+                },
+            });
+
+            s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Description = "Place to add JWT with Bearer",
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
+            s.AddSecurityRequirement(new OpenApiSecurityRequirement()
+            {
+               {
+                    new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    },
+                    Name = "Bearer"
+                },
+                new List<string>()
+                }
+            });
+
+            var xmlFile = $"{typeof(Presentation.AssemblyReference).Assembly.GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            s.IncludeXmlComments(xmlPath);
+
+
+        });
+
+
+    }
 }
