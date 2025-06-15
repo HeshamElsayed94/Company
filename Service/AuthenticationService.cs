@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Contracts;
+using Entities.Exceptions;
 using Entities.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -64,6 +65,22 @@ public sealed class AuthenticationService(
         }
 
         return user;
+    }
+
+    public async Task<TokenDto> RefreshToken(TokenDto tokenDto)
+    {
+        var principal = GetPrincipalFromExpiredToken(tokenDto.AccessToken);
+
+        var user = await userManager.FindByNameAsync(principal.Identity.Name);
+
+        if (user is null
+            || user.RefreshToken != tokenDto.RefreshToken
+            || user.RefreshTokenExpiryTime <= DateTime.UtcNow
+            )
+            throw new RefreshTokenBadRequest();
+
+
+        return await CreateToken(user, false);
     }
 
     private string GenerateRefreshToken()
