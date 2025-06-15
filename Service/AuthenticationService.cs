@@ -7,7 +7,7 @@ using Entities.ConfigurationModels;
 using Entities.Exceptions;
 using Entities.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Service.Contracts;
 using Service.Mapping;
@@ -21,13 +21,13 @@ public sealed class AuthenticationService : IAuthenticationService
     private readonly ILoggerManager _logger;
     private readonly MappingProfile _mapper;
     private readonly UserManager<User> _userManager;
-    private readonly IConfiguration _configuration;
+    private readonly IOptionsMonitor<JwtConfiguration> _configuration;
 
     public AuthenticationService(
         ILoggerManager logger,
         MappingProfile mapper,
         UserManager<User> userManager,
-        IConfiguration configuration
+        IOptionsMonitor<JwtConfiguration> configuration
 
     )
     {
@@ -35,8 +35,7 @@ public sealed class AuthenticationService : IAuthenticationService
         this._mapper = mapper;
         this._userManager = userManager;
         this._configuration = configuration;
-        _jwtConfiguration = new JwtConfiguration();
-        _configuration.Bind(_jwtConfiguration.Section, _jwtConfiguration);
+        _jwtConfiguration = _configuration.CurrentValue;
     }
 
     public async Task<TokenDto> CreateToken(User user, bool populateExp)
@@ -120,6 +119,7 @@ public sealed class AuthenticationService : IAuthenticationService
             ValidateIssuer = true,
             ValidateIssuerSigningKey = true,
             ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromSeconds(5),
 
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SECRET"))),
             ValidIssuer = _jwtConfiguration.ValidIssuer,

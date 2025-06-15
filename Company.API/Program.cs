@@ -22,7 +22,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelS
 #region NewtoSoft config to patch request only
 
 NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter() =>
-new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson()
+new ServiceCollection().AddLogging().AddControllers().AddNewtonsoftJson()
 .Services.BuildServiceProvider()
 .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters
 .OfType<NewtonsoftJsonPatchInputFormatter>().First();
@@ -89,6 +89,8 @@ builder.Services.AddConfigureIdentity();
 builder.Services.AddConfigureAuthenticationService();
 
 builder.Services.AddConfigureJWT(builder.Configuration);
+
+builder.Services.AddJwtConfiguration(builder.Configuration);
 
 #endregion Services
 
