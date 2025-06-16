@@ -10,7 +10,7 @@ namespace CompanyEmployees.Presentation.Controllers;
 [ApiVersion("1")]
 [Route("api/authentication")]
 [ApiController]
-public class AuthenticationController(IServiceManger service) : ControllerBase
+public class AuthenticationController(IServiceManger service) : ApiBaseController
 {
     [HttpPost]
     [ServiceFilter<ValidationFilterAttribute>]

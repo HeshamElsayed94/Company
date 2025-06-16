@@ -13,7 +13,7 @@ namespace CompanyEmployees.Presentation.Controllers;
 [ApiVersion("1")]
 [Route("api/companies/{companyId:guid}/employees")]
 [ApiController]
-public class EmployeesController(IServiceManger service) : ControllerBase
+public class EmployeesController(IServiceManger service) : ApiBaseController
 {
     [HttpOptions]
     public IActionResult GetCompaniesOptions()

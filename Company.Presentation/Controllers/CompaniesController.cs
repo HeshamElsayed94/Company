@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using CompanyEmployees.Presentation.ActionFilters;
+using CompanyEmployees.Presentation.ApiBaseResponseExtensions;
 using CompanyEmployees.Presentation.ModelBinders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,8 +15,7 @@ namespace CompanyEmployees.Presentation.Controllers;
 [ApiVersion("1")]
 [Route("api/companies")]
 [ApiController]
-public class CompaniesController(IServiceManger service)
-    : ControllerBase
+public class CompaniesController(IServiceManger service) : ApiBaseController
 {
 
     [HttpOptions]
@@ -37,11 +37,25 @@ public class CompaniesController(IServiceManger service)
     [HttpGet(Name = "GetCompanies")]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> GetCompanies()
-        => Ok(await service.CompanyService.GetAllCompaniesAsync(false));
+    {
+        var baseResult = await service.CompanyService.GetAllCompaniesAsync(false);
+
+        if (!baseResult.Success)
+            return ProcessError(baseResult);
+
+        return Ok(baseResult.GetResult<IEnumerable<CompanyDto>>());
+    }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult> GetCompany(Guid id)
-        => Ok(await service.CompanyService.GetCompanyAsync(id, false));
+    public async Task<IActionResult> GetCompany(Guid id)
+    {
+        var baseResult = await service.CompanyService.GetCompanyAsync(id, false);
+
+        if (!baseResult.Success)
+            return ProcessError(baseResult);
+
+        return Ok(baseResult.GetResult<CompanyDto>());
+    }
 
     [HttpPost(Name = "CreateCompany")]
     [ServiceFilter(typeof(ValidationFilterAttribute))]

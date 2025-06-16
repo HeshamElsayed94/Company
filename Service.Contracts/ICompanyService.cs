@@ -1,18 +1,19 @@
 ﻿using Entities.Models;
+using Entities.Responses;
 using Shared.DTOs;
 
 namespace Service.Contracts;
 
 public interface ICompanyService
 {
-    Task<IEnumerable<CompanyDto>> GetAllCompaniesAsync(bool trackChanges);
+    Task<ApiBaseResponse> GetAllCompaniesAsync(bool trackChanges);
 
     Task<IEnumerable<CompanyDto>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges);
 
     Task<(IEnumerable<CompanyDto> companies, string ids)> CreateCompanyCollectionAsync
         (IEnumerable<CompanyForCreationDto> companyCollection);
 
-    Task<CompanyDto> GetCompanyAsync(Guid companyId, bool trackChanges);
+    Task<ApiBaseResponse> GetCompanyAsync(Guid companyId, bool trackChanges);
 
     Task<bool> CompanyExistsAsync(Guid companyId);
 

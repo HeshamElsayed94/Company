@@ -9,7 +9,7 @@ namespace CompanyEmployees.Presentation.Controllers;
 [ApiVersion("1")]
 [Route("api/token")]
 [ApiController]
-public class TokenController(IServiceManger service) : ControllerBase
+public class TokenController(IServiceManger service) : ApiBaseController
 {
     [HttpPost("refresh")]
     [ServiceFilter(typeof(ValidationFilterAttribute))]
