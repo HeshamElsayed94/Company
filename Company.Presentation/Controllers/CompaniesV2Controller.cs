@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
-[ApiExplorerSettings(GroupName = "v2")]
+[ApiVersion("2")]
 [Route("api/companies")]
 [ApiController]
 public class CompaniesV2Controller(IServiceManger service) : ControllerBase

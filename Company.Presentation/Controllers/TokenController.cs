@@ -1,11 +1,12 @@
-﻿using CompanyEmployees.Presentation.ActionFilters;
+﻿using Asp.Versioning;
+using CompanyEmployees.Presentation.ActionFilters;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DTOs;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
-[ApiExplorerSettings(GroupName = "v1")]
+[ApiVersion("1")]
 [Route("api/token")]
 [ApiController]
 public class TokenController(IServiceManger service) : ControllerBase

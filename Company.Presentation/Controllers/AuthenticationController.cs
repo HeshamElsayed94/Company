@@ -1,4 +1,5 @@
-﻿using CompanyEmployees.Presentation.ActionFilters;
+﻿using Asp.Versioning;
+using CompanyEmployees.Presentation.ActionFilters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
@@ -6,7 +7,7 @@ using Shared.DTOs;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
-[ApiExplorerSettings(GroupName = "v1")]
+[ApiVersion("1")]
 [Route("api/authentication")]
 [ApiController]
 public class AuthenticationController(IServiceManger service) : ControllerBase

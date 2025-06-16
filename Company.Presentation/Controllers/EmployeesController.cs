@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Asp.Versioning;
 using CompanyEmployees.Presentation.ActionFilters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -9,7 +10,7 @@ using Shared.RequestFeatures;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
-[ApiExplorerSettings(GroupName = "v1")]
+[ApiVersion("1")]
 [Route("api/companies/{companyId:guid}/employees")]
 [ApiController]
 public class EmployeesController(IServiceManger service) : ControllerBase

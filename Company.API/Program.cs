@@ -107,7 +107,6 @@ app.MapOpenApi();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-
     var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
     foreach (var description in provider.ApiVersionDescriptions)
