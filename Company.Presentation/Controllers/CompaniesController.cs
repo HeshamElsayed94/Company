@@ -2,7 +2,6 @@
 using CompanyEmployees.Presentation.ActionFilters;
 using CompanyEmployees.Presentation.ApiBaseResponseExtensions;
 using CompanyEmployees.Presentation.ModelBinders;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -18,99 +17,99 @@ namespace CompanyEmployees.Presentation.Controllers;
 public class CompaniesController(IServiceManger service) : ApiBaseController
 {
 
-    [HttpOptions]
-    public IActionResult GetCompaniesOptions()
-    {
-        Response.Headers.Append("Allow", "GET, OPTIONS, POST, PUT,PATCH, DELETE");
+	[HttpOptions]
+	public IActionResult GetCompaniesOptions()
+	{
+		Response.Headers.Append("Allow", "GET, OPTIONS, POST, PUT,PATCH, DELETE");
 
-        return Ok();
-    }
+		return Ok();
+	}
 
-    [HttpGet("collection/({ids})")]
-    public async Task<IActionResult> GetCompanyCollection([FromRoute][ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
-        => Ok(await service.CompanyService.GetByIdsAsync(ids, false));
+	[HttpGet("collection/({ids})")]
+	public async Task<IActionResult> GetCompanyCollection([FromRoute][ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
+		=> Ok(await service.CompanyService.GetByIdsAsync(ids, false));
 
-    /// <summary>
-    /// Gets the list of all companies
-    /// </summary>
-    /// <returns>The companies list</returns>
-    [HttpGet(Name = "GetCompanies")]
-    [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> GetCompanies()
-    {
-        var baseResult = await service.CompanyService.GetAllCompaniesAsync(false);
+	/// <summary>
+	/// Gets the list of all companies
+	/// </summary>
+	/// <returns>The companies list</returns>
+	[HttpGet(Name = "GetCompanies")]
+	//[Authorize(Roles = "Administrator")]
+	public async Task<IActionResult> GetCompanies()
+	{
+		var baseResult = await service.CompanyService.GetAllCompaniesAsync(false);
 
-        if (!baseResult.Success)
-            return ProcessError(baseResult);
+		if (!baseResult.Success)
+			return ProcessError(baseResult);
 
-        return Ok(baseResult.GetResult<IEnumerable<CompanyDto>>());
-    }
+		return Ok(baseResult.GetResult<IEnumerable<CompanyDto>>());
+	}
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetCompany(Guid id)
-    {
-        var baseResult = await service.CompanyService.GetCompanyAsync(id, false);
+	[HttpGet("{id:guid}")]
+	public async Task<IActionResult> GetCompany(Guid id)
+	{
+		var baseResult = await service.CompanyService.GetCompanyAsync(id, false);
 
-        if (!baseResult.Success)
-            return ProcessError(baseResult);
+		if (!baseResult.Success)
+			return ProcessError(baseResult);
 
-        return Ok(baseResult.GetResult<CompanyDto>());
-    }
+		return Ok(baseResult.GetResult<CompanyDto>());
+	}
 
-    [HttpPost(Name = "CreateCompany")]
-    [ServiceFilter(typeof(ValidationFilterAttribute))]
-    public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
-    {
-        var createdCompany = service.CompanyService.CreateCompanyAsync(company);
+	[HttpPost(Name = "CreateCompany")]
+	[ServiceFilter(typeof(ValidationFilterAttribute))]
+	public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
+	{
+		var createdCompany = service.CompanyService.CreateCompanyAsync(company);
 
-        return CreatedAtAction(nameof(GetCompany), new { id = createdCompany.Id }, createdCompany);
-    }
+		return CreatedAtAction(nameof(GetCompany), new { id = createdCompany.Id }, createdCompany);
+	}
 
-    [HttpPost("collection")]
-    [ServiceFilter<ValidationFilterAttribute>]
-    public async Task<IActionResult> CreateCompanyCollection([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
-    {
-        var (companies, ids) = await service.CompanyService
-            .CreateCompanyCollectionAsync(companyCollection);
+	[HttpPost("collection")]
+	[ServiceFilter<ValidationFilterAttribute>]
+	public async Task<IActionResult> CreateCompanyCollection([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
+	{
+		var (companies, ids) = await service.CompanyService
+			.CreateCompanyCollectionAsync(companyCollection);
 
-        return CreatedAtAction(nameof(GetCompanyCollection), new { ids }, companies);
-    }
+		return CreatedAtAction(nameof(GetCompanyCollection), new { ids }, companies);
+	}
 
-    [HttpPut("{id:guid}")]
-    [ServiceFilter<ValidationFilterAttribute>]
-    public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto companyForUpdate)
-    {
-        service.CompanyService.UpdateCompanyAsync(id, companyForUpdate, true);
+	[HttpPut("{id:guid}")]
+	[ServiceFilter<ValidationFilterAttribute>]
+	public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto companyForUpdate)
+	{
+		service.CompanyService.UpdateCompanyAsync(id, companyForUpdate, true);
 
-        return NoContent();
-    }
+		return NoContent();
+	}
 
-    [HttpPatch("{id:guid}")]
-    public async Task<IActionResult> PartiallyUpdateCompany(Guid id, [FromBody] JsonPatchDocument<CompanyForUpdateDto> pathDoc)
-    {
-        if (pathDoc is null)
-            return BadRequest($"{nameof(pathDoc)} object sent from client is null.");
+	[HttpPatch("{id:guid}")]
+	public async Task<IActionResult> PartiallyUpdateCompany(Guid id, [FromBody] JsonPatchDocument<CompanyForUpdateDto> pathDoc)
+	{
+		if (pathDoc is null)
+			return BadRequest($"{nameof(pathDoc)} object sent from client is null.");
 
-        var (companyToPatch, companyEntity) = await service.CompanyService
-            .GetCompanyForPatchAsync(id, true);
+		var (companyToPatch, companyEntity) = await service.CompanyService
+			.GetCompanyForPatchAsync(id, true);
 
-        pathDoc.ApplyTo(companyToPatch, ModelState);
+		pathDoc.ApplyTo(companyToPatch, ModelState);
 
-        TryValidateModel(companyToPatch);
+		TryValidateModel(companyToPatch);
 
-        if (!ModelState.IsValid)
-            return UnprocessableEntity(ModelState);
+		if (!ModelState.IsValid)
+			return UnprocessableEntity(ModelState);
 
-        await service.CompanyService.SaveChangesForPatchAsync(companyToPatch, companyEntity);
+		await service.CompanyService.SaveChangesForPatchAsync(companyToPatch, companyEntity);
 
-        return NoContent();
-    }
+		return NoContent();
+	}
 
-    [HttpDelete("{id:guid}")]
-    public IActionResult DeleteCompany(Guid id)
-    {
-        service.CompanyService.DeleteCompanyAsync(id, false);
+	[HttpDelete("{id:guid}")]
+	public IActionResult DeleteCompany(Guid id)
+	{
+		service.CompanyService.DeleteCompanyAsync(id, false);
 
-        return NoContent();
-    }
+		return NoContent();
+	}
 }

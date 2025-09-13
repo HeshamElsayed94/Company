@@ -23,19 +23,18 @@ builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelS
 builder.Services.AddConfigureVersioning();
 
 builder.Services.AddControllers(config =>
-    {
-        config.RespectBrowserAcceptHeader = true;
-        config.ReturnHttpNotAcceptable = true;
-        //config.CacheProfiles.Add("120SecondsDuration", new()
-        //{
-        //    Duration = 120
-        //});
-    })
-    .AddXmlDataContractSerializerFormatters()
-    .AddCustomCSVFormatter()
-    .AddJsonOptions(op => op.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
-    .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
-
+	{
+		config.RespectBrowserAcceptHeader = true;
+		config.ReturnHttpNotAcceptable = true;
+		//config.CacheProfiles.Add("120SecondsDuration", new()
+		//{
+		//    Duration = 120
+		//});
+	})
+	.AddXmlDataContractSerializerFormatters()
+	.AddCustomCSVFormatter()
+	.AddJsonOptions(op => op.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
+	.AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
 
 builder.Services.ConfigureOptions<ConfigureJsonPatchInputFormatter>();
 
@@ -65,13 +64,12 @@ builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
 
 builder.Services.AddResponseCaching();
 
-
 builder.Services.AddHttpCacheHeaders(expirationOpt =>
-{
-    expirationOpt.MaxAge = 60;
-    expirationOpt.CacheLocation = CacheLocation.Public;
-},
-validationOpt => validationOpt.MustRevalidate = true);
+	{
+		expirationOpt.MaxAge = 60;
+		expirationOpt.CacheLocation = CacheLocation.Public;
+	},
+	validationOpt => validationOpt.MustRevalidate = true);
 
 builder.Services.AddMemoryCache();
 
@@ -89,14 +87,12 @@ builder.Services.AddJwtConfiguration(builder.Configuration);
 
 #endregion Services
 
-
 builder.Services.AddConfigureSqlContext(builder.Configuration);
 
 builder.Services.AddOpenApi();
 builder.Services.AddConfigureSwagger();
 
 var app = builder.Build();
-
 
 var logger = app.Services.GetRequiredService<ILoggerManager>();
 
@@ -105,41 +101,42 @@ app.AddConfigureExceptionHandler(logger);
 app.MapOpenApi();
 
 app.UseSwagger();
+
 app.UseSwaggerUI(options =>
 {
-    var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+	var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
-    foreach (var description in provider.ApiVersionDescriptions)
-    {
-        options.SwaggerEndpoint(
-            $"/swagger/{description.GroupName}/swagger.json",
-            $"CompanyEmployees.API {description.GroupName.ToUpperInvariant()}"
-        );
-    }
+	foreach (var description in provider.ApiVersionDescriptions)
+	{
+		options.SwaggerEndpoint(
+			$"/swagger/{description.GroupName}/swagger.json",
+			$"CompanyEmployees.API {description.GroupName.ToUpperInvariant()}"
+		);
+	}
 });
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseHsts();
+	app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseForwardedHeaders(new()
 {
-    ForwardedHeaders = ForwardedHeaders.All
+	ForwardedHeaders = ForwardedHeaders.All
 });
 
 app.UseIpRateLimiting();
 
 app.UseCors("CorsPolicy");
 
-app.UseResponseCaching();
+//app.UseResponseCaching();
 app.UseHttpCacheHeaders();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllers();
 
