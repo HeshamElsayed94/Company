@@ -3,6 +3,7 @@ using Asp.Versioning.ApiExplorer;
 using AspNetCoreRateLimit;
 using CompanyEmployees.API;
 using CompanyEmployees.API.Extensions;
+using CompanyEmployees.Presentation;
 using CompanyEmployees.Presentation.ActionFilters;
 using Contracts;
 using Marvin.Cache.Headers;
@@ -22,7 +23,6 @@ builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelS
 
 builder.Services.AddConfigureVersioning();
 
-
 builder.Services.AddControllers(config =>
 	{
 		config.RespectBrowserAcceptHeader = true;
@@ -35,7 +35,7 @@ builder.Services.AddControllers(config =>
 	.AddXmlDataContractSerializerFormatters()
 	.AddCustomCSVFormatter()
 	.AddJsonOptions(op => op.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
-	.AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
+	.AddApplicationPart(typeof(AssemblyReference).Assembly);
 
 builder.Services.ConfigureOptions<ConfigureJsonPatchInputFormatter>();
 
@@ -108,18 +108,13 @@ app.UseSwaggerUI(options =>
 	var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
 	foreach (var description in provider.ApiVersionDescriptions)
-	{
 		options.SwaggerEndpoint(
 			$"/swagger/{description.GroupName}/swagger.json",
 			$"CompanyEmployees.API {description.GroupName.ToUpperInvariant()}"
 		);
-	}
 });
 
-if (!app.Environment.IsDevelopment())
-{
-	app.UseHsts();
-}
+if (!app.Environment.IsDevelopment()) app.UseHsts();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
