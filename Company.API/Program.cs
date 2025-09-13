@@ -22,6 +22,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelS
 
 builder.Services.AddConfigureVersioning();
 
+
 builder.Services.AddControllers(config =>
 	{
 		config.RespectBrowserAcceptHeader = true;
